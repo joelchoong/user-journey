@@ -53,30 +53,32 @@ export const WorkflowHeader = ({
             className="mb-2 px-1 relative group"
         >
             <div
-                className="text-xs font-semibold rounded-t-lg border-t border-x border-border/50 flex items-center justify-between transition-all relative overflow-visible"
+                className="text-xs font-semibold rounded-t-lg border-t border-x border-border/50 flex items-center justify-between transition-all relative overflow-visible group/header"
                 style={{
                     backgroundColor: workflow.color || '#f3f4f6',
                     color: '#1f2937',
                 }}
             >
                 {/* Left Controls */}
-                <div className="flex items-center">
-                    {canExtendLeft && (
+                <div className="flex items-center h-full">
+                    {canExtendLeft ? (
                         <button
                             onClick={onExtendLeft}
-                            className="p-1 hover:bg-black/5 rounded-tl-lg transition-colors border-r border-black/5"
-                            title="Extend Left"
+                            className="h-full px-1.5 hover:bg-black/10 transition-colors border-r border-black/5 flex items-center justify-center"
+                            title="Extend Left (Include previous column)"
                         >
-                            <ChevronLeft className="w-3 h-3" />
+                            <ChevronLeft className="w-3.5 h-3.5" />
                         </button>
+                    ) : (
+                        <div className="w-2" /> // Spacer
                     )}
                     {canRetract && (
                         <button
                             onClick={onRetractLeft}
-                            className="p-1 hover:bg-black/5 transition-colors border-r border-black/5"
-                            title="Retract Left"
+                            className="h-full px-1.5 hover:bg-black/10 transition-colors border-r border-black/5 flex items-center justify-center opacity-0 group-hover/header:opacity-100 transition-opacity"
+                            title="Retract Left (Exclude first column)"
                         >
-                            <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
                         </button>
                     )}
                 </div>
@@ -101,14 +103,15 @@ export const WorkflowHeader = ({
                 </div>
 
                 {/* Right Controls */}
-                <div className="flex items-center">
+                <div className="flex items-center h-full">
                     {/* Color Picker Toggle */}
-                    <div className="relative">
+                    <div className="relative h-full flex items-center">
                         <button
                             onClick={() => setShowColorPicker(!showColorPicker)}
-                            className="p-1 hover:bg-black/5 transition-colors border-l border-black/5"
+                            className="h-full px-1.5 hover:bg-black/10 transition-colors border-l border-black/5 flex items-center justify-center opacity-0 group-hover/header:opacity-100 transition-opacity"
+                            title="Change Color"
                         >
-                            <Palette className="w-3 h-3 text-muted-foreground/70" />
+                            <Palette className="w-3.5 h-3.5 text-muted-foreground/70" />
                         </button>
                         <AnimatePresence>
                             {showColorPicker && (
@@ -116,12 +119,12 @@ export const WorkflowHeader = ({
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className="absolute top-full right-0 mt-1 p-2 bg-white rounded-lg shadow-xl border border-border z-50 flex gap-1 w-[160px] flex-wrap"
+                                    className="absolute top-full right-0 mt-1 p-2 bg-white rounded-lg shadow-xl border border-border z-50 flex gap-1 w-[160px] flex-wrap cursor-default"
                                 >
                                     {colors.map((c) => (
                                         <button
                                             key={c}
-                                            className="w-6 h-6 rounded-full border border-border/50 hover:scale-110 transition-transform"
+                                            className="w-6 h-6 rounded-full border border-border/50 hover:scale-110 transition-transform shadow-sm"
                                             style={{ backgroundColor: c }}
                                             onClick={() => {
                                                 onUpdate({ color: c });
@@ -137,20 +140,22 @@ export const WorkflowHeader = ({
                     {canRetract && (
                         <button
                             onClick={onRetractRight}
-                            className="p-1 hover:bg-black/5 transition-colors border-l border-black/5"
-                            title="Retract Right"
+                            className="h-full px-1.5 hover:bg-black/10 transition-colors border-l border-black/5 flex items-center justify-center opacity-0 group-hover/header:opacity-100 transition-opacity"
+                            title="Retract Right (Exclude last column)"
                         >
-                            <ChevronLeft className="w-3 h-3 text-muted-foreground" />
+                            <ChevronLeft className="w-3.5 h-3.5 text-muted-foreground" />
                         </button>
                     )}
-                    {canExtendRight && (
+                    {canExtendRight ? (
                         <button
                             onClick={onExtendRight}
-                            className="p-1 hover:bg-black/5 rounded-tr-lg transition-colors border-l border-black/5"
-                            title="Extend Right"
+                            className="h-full px-1.5 hover:bg-black/10 transition-colors border-l border-black/5 flex items-center justify-center"
+                            title="Extend Right (Include next column)"
                         >
-                            <ChevronRight className="w-3 h-3" />
+                            <ChevronRight className="w-3.5 h-3.5" />
                         </button>
+                    ) : (
+                        <div className="w-2" /> // Spacer
                     )}
                 </div>
             </div>
