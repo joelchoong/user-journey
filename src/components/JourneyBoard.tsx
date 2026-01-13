@@ -188,19 +188,17 @@ export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWork
                 if (!workflow && !group.workflowId) return null;
 
                 return (
-                  <div
+                  <WorkflowHeader
                     key={`wf-group-${i}`}
-                    style={{ gridColumn: `${group.start} / ${group.end}`, gridRow: 1 }}
-                    className="mb-2 px-1"
-                  >
-                    <div
-                      className="text-xs font-semibold px-3 py-1.5 rounded-t-lg border-t border-x border-border/50 truncate flex items-center gap-2"
-                      style={{ backgroundColor: workflow?.color || '#f3f4f6', color: '#1f2937' }}
-                    >
-                      {workflow?.title || 'Unassigned Steps'}
-                    </div>
-                    <div className="h-1 w-full" style={{ backgroundColor: workflow?.color || '#e5e7eb' }}></div>
-                  </div>
+                    workflow={workflow}
+                    group={group}
+                    totalColumns={columns.length}
+                    onExtendLeft={() => handleSetColumnWorkflow(group.start - 2, group.workflowId)}
+                    onExtendRight={() => handleSetColumnWorkflow(group.end - 1, group.workflowId)}
+                    onRetractLeft={() => handleSetColumnWorkflow(group.start - 1, undefined)}
+                    onRetractRight={() => handleSetColumnWorkflow(group.end - 2, undefined)}
+                    onUpdate={(updates) => onUpdateWorkflow?.(workflow.id, updates)}
+                  />
                 );
               })}
 
