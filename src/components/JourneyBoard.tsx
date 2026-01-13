@@ -11,11 +11,12 @@ interface JourneyBoardProps {
   workflows?: Workflow[];
   onColumnsChange: (columns: JourneyColumnType[]) => void;
   onUpdateWorkflow?: (workflowId: string, updates: Partial<Workflow>) => void;
+  onAddWorkflow?: (title: string, color: string) => void;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWorkflow }: JourneyBoardProps) => {
+export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWorkflow, onAddWorkflow }: JourneyBoardProps) => {
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
 
@@ -217,6 +218,7 @@ export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWork
                     onAddCard={() => addCard(column.id)}
                     onUpdateCard={(cardId, card) => updateCard(column.id, cardId, card)}
                     onDeleteCard={(cardId) => deleteCard(column.id, cardId)}
+                    onAddWorkflow={onAddWorkflow}
                   />
                 </div>
               ))}

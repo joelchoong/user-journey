@@ -2,6 +2,12 @@ import { AppState, Persona, JourneyColumn } from '@/types/journey';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
+const SampleWorkflows = [
+  { id: 'wf-onboarding', title: 'Onboarding', color: '#E0F2FE' },
+  { id: 'wf-usage', title: 'Active Usage', color: '#F0FDF4' },
+  { id: 'wf-support', title: 'Support & Claims', color: '#FEF2F2' },
+];
+
 export const createEmptyPersona = (name: string = 'New Persona'): Persona => ({
   id: generateId(),
   name,
@@ -46,6 +52,12 @@ const createProjectWithPersona = (name: string, persona: Persona) => ({
     name,
     personas: [persona],
     activePersonaId: persona.id,
+    workflows: [
+      { id: generateId(), title: 'Discovery', color: '#E0F2FE' },
+      { id: generateId(), title: 'Consideration', color: '#FFF7ED' },
+      { id: generateId(), title: 'Conversion', color: '#F0FDF4' },
+      { id: generateId(), title: 'Retention', color: '#F3F4F6' },
+    ],
   },
   personaId: persona.id,
 });
@@ -64,11 +76,6 @@ const samplePersona: Persona = {
     'Too many steps to submit a claim',
     'Unclear warranty coverage terms',
     'Difficulty tracking multiple devices',
-  ],
-  workflows: [
-    { id: 'wf-onboarding', title: 'Onboarding', color: '#E0F2FE' },
-    { id: 'wf-usage', title: 'Active Usage', color: '#F0FDF4' },
-    { id: 'wf-support', title: 'Support & Claims', color: '#FEF2F2' },
   ],
   columns: [
     {
@@ -174,6 +181,7 @@ export const initialAppState: AppState = {
       name: 'Device Protection App',
       personas: [samplePersona],
       activePersonaId: 'persona-1',
+      workflows: SampleWorkflows,
     },
   ],
 
