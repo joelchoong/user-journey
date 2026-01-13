@@ -1,5 +1,6 @@
 import { JourneyColumn as JourneyColumnType, JourneyCard, Workflow } from '@/types/journey';
 import { JourneyColumn } from './JourneyColumn';
+import { WorkflowHeader } from './WorkflowHeader';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { Plus, Inbox } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -9,11 +10,12 @@ interface JourneyBoardProps {
   columns: JourneyColumnType[];
   workflows?: Workflow[];
   onColumnsChange: (columns: JourneyColumnType[]) => void;
+  onUpdateWorkflow?: (workflowId: string, updates: Partial<Workflow>) => void;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const JourneyBoard = ({ columns, workflows, onColumnsChange }: JourneyBoardProps) => {
+export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWorkflow }: JourneyBoardProps) => {
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
 
@@ -112,6 +114,13 @@ export const JourneyBoard = ({ columns, workflows, onColumnsChange }: JourneyBoa
         ? { ...col, cards: col.cards.filter((c) => c.id !== cardId) }
         : col
     );
+    onColumnsChange(newColumns);
+  };
+
+  const handleSetColumnWorkflow = (columnIndex: number, workflowId: string | undefined) => {
+    if (columnIndex < 0 || columnIndex >= columns.length) return;
+    const newColumns = [...columns];
+    newColumns[columnIndex] = { ...newColumns[columnIndex], workflowId };
     onColumnsChange(newColumns);
   };
 

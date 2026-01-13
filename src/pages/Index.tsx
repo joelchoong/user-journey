@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { JourneyBoard } from '@/components/JourneyBoard';
 import { PrintableJourney } from '@/components/PrintableJourney';
-import { AppState, Project, Persona, JourneyColumn } from '@/types/journey';
+import { AppState, Project, Persona, JourneyColumn, Workflow } from '@/types/journey';
 import { initialAppState, createEmptyProject, createEmptyPersona } from '@/data/initialBoard';
 import { Inbox, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
