@@ -128,6 +128,13 @@ const Index = () => {
     }));
   };
 
+  // Import columns (append to existing)
+  const handleImportColumns = (newColumns: JourneyColumn[]) => {
+    if (!activeProject || !activePersona) return;
+    const existingColumns = activePersona.columns;
+    handleColumnsChange([...existingColumns, ...newColumns]);
+  };
+
   // Empty state for no project
   if (!activeProject) {
     return (
@@ -220,6 +227,7 @@ const Index = () => {
         onCreatePersona={handleCreatePersona}
         onDeletePersona={handleDeletePersona}
         onUpdatePersona={handleUpdatePersona}
+        onImportColumns={handleImportColumns}
       />
       <JourneyBoard columns={activePersona.columns} onColumnsChange={handleColumnsChange} />
     </div>
