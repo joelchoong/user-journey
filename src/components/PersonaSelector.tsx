@@ -1,5 +1,5 @@
 import { Persona } from '@/types/journey';
-import { User, Plus, ChevronDown, Check, Trash2, Target, AlertTriangle } from 'lucide-react';
+import { User, Plus, ChevronDown, Check, Trash2, Target, AlertTriangle, Pencil } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -154,25 +154,33 @@ export const PersonaSelector = ({
                               onClick={(e) => e.stopPropagation()}
                             />
                           ) : (
-                            <span
-                              className="flex-1 text-sm truncate"
-                              onDoubleClick={(e) => handleStartEdit(persona, e)}
-                              title="Double-click to rename"
-                            >
+                            <span className="flex-1 text-sm truncate">
                               {persona.name}
                             </span>
                           )}
 
-                          {personas.length > 1 && editingId !== persona.id && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDeletePersona(persona.id);
-                              }}
-                              className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-all"
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
-                            </button>
+                          {editingId !== persona.id && (
+                            <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all">
+                              <button
+                                onClick={(e) => handleStartEdit(persona, e)}
+                                className="p-1 rounded hover:bg-muted transition-all"
+                                title="Rename"
+                              >
+                                <Pencil className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                              </button>
+                              {personas.length > 1 && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeletePersona(persona.id);
+                                  }}
+                                  className="p-1 rounded hover:bg-destructive/10 transition-all"
+                                  title="Delete"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       ))
