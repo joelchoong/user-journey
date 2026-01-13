@@ -1,7 +1,8 @@
-import { Layers, Share2, Link, FileDown, Check } from 'lucide-react';
-import { Project, Persona } from '@/types/journey';
+import { Layers, Share2, Link, FileDown, Check, Upload } from 'lucide-react';
+import { Project, Persona, JourneyColumn } from '@/types/journey';
 import { ProjectSelector } from './ProjectSelector';
 import { PersonaSelector } from './PersonaSelector';
+import { ImportSpreadsheet } from './ImportSpreadsheet';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -18,6 +19,7 @@ interface HeaderProps {
   onCreatePersona: () => void;
   onDeletePersona: (personaId: string) => void;
   onUpdatePersona: (persona: Persona) => void;
+  onImportColumns?: (columns: JourneyColumn[]) => void;
 }
 
 export const Header = ({
@@ -32,7 +34,9 @@ export const Header = ({
   onCreatePersona,
   onDeletePersona,
   onUpdatePersona,
+  onImportColumns,
 }: HeaderProps) => {
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -98,55 +102,78 @@ export const Header = ({
         )}
       </div>
 
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setIsShareOpen(!isShareOpen)}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
-            isShareOpen
-              ? 'bg-primary/10 border-primary/30 text-primary'
-              : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Share2 className="w-4 h-4" />
-          <span className="text-sm font-medium">Share</span>
-        </button>
+      <div className="flex items-center gap-2">
+        {/* Import Button */}
+        {activePersona && onImportColumns && (
+          <button
+            onClick={() => setIsImportOpen(true)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            <span className="text-sm font-medium">Import</span>
+          </button>
+        )}
 
-        <AnimatePresence>
-          {isShareOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setIsShareOpen(false)} />
-              <motion.div
-                initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-full right-0 mt-2 z-50 w-48 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
-              >
-                <div className="p-1">
-                  <button
-                    onClick={handleCopyLink}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                  >
-                    {copied ? (
-                      <Check className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Link className="w-4 h-4 text-muted-foreground" />
-                    )}
-                    {copied ? 'Copied!' : 'Copy Link'}
-                  </button>
-                  <button
-                    onClick={handleSaveAsPDF}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                  >
-                    <FileDown className="w-4 h-4 text-muted-foreground" />
-                    Save as PDF
-                  </button>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        {/* Share Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsShareOpen(!isShareOpen)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
+              isShareOpen
+                ? 'bg-primary/10 border-primary/30 text-primary'
+                : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Share2 className="w-4 h-4" />
+            <span className="text-sm font-medium">Share</span>
+          </button>
+
+          <AnimatePresence>
+            {isShareOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsShareOpen(false)} />
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 mt-2 z-50 w-48 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
+                >
+                  <div className="p-1">
+                    <button
+                      onClick={handleCopyLink}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                      {copied ? (
+                        <Check className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <Link className="w-4 h-4 text-muted-foreground" />
+                      )}
+                      {copied ? 'Copied!' : 'Copy Link'}
+                    </button>
+                    <button
+                      onClick={handleSaveAsPDF}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                      <FileDown className="w-4 h-4 text-muted-foreground" />
+                      Save as PDF
+                    </button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
+
+      {/* Import Dialog */}
+      {onImportColumns && (
+        <ImportSpreadsheet
+          isOpen={isImportOpen}
+          onClose={() => setIsImportOpen(false)}
+          onImport={onImportColumns}
+        />
+      )}
     </header>
   );
 };
