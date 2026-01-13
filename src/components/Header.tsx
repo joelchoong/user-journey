@@ -20,6 +20,7 @@ interface HeaderProps {
   onDeletePersona: (personaId: string) => void;
   onUpdatePersona: (persona: Persona) => void;
   onImportColumns?: (columns: JourneyColumn[]) => void;
+  onSaveAsPDF?: () => void;
 }
 
 export const Header = ({
@@ -35,6 +36,7 @@ export const Header = ({
   onDeletePersona,
   onUpdatePersona,
   onImportColumns,
+  onSaveAsPDF,
 }: HeaderProps) => {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -69,9 +71,10 @@ export const Header = ({
   };
 
   const handleSaveAsPDF = () => {
-    window.print();
     setIsShareOpen(false);
-    toast.success('Print dialog opened');
+    if (onSaveAsPDF) {
+      onSaveAsPDF();
+    }
   };
 
   const handleProfileSettings = () => {
