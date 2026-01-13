@@ -14,13 +14,22 @@ export interface JourneyColumn {
 }
 
 export interface Persona {
+  id: string;
   name: string;
   description: string;
   goals: string[];
   painPoints: string[];
+  columns: JourneyColumn[];
 }
 
-export interface JourneyBoard {
-  persona: Persona;
-  columns: JourneyColumn[];
+export interface Project {
+  id: string;
+  name: string;
+  personas: Persona[];
+  activePersonaId: string | null;
+}
+
+export interface AppState {
+  projects: Project[];
+  activeProjectId: string | null;
 }

@@ -1,20 +1,70 @@
-import { JourneyBoard } from '@/types/journey';
+import { AppState, Persona, JourneyColumn } from '@/types/journey';
 
-export const initialBoard: JourneyBoard = {
-  persona: {
-    name: 'Alex Chen',
-    description: 'A busy professional who wants to protect their household electronics and appliances with minimal effort. Values convenience and peace of mind.',
-    goals: [
-      'Easily register devices for protection',
-      'Quick claim submission when issues arise',
-      'Clear visibility of coverage status',
-    ],
-    painPoints: [
-      'Too many steps to submit a claim',
-      'Unclear warranty coverage terms',
-      'Difficulty tracking multiple devices',
-    ],
+const generateId = () => Math.random().toString(36).substr(2, 9);
+
+export const createEmptyPersona = (name: string = 'New Persona'): Persona => ({
+  id: generateId(),
+  name,
+  description: 'Describe this persona...',
+  goals: ['Add a goal...'],
+  painPoints: ['Add a pain point...'],
+  columns: [
+    {
+      id: generateId(),
+      title: 'Step 1',
+      cards: [],
+    },
+    {
+      id: generateId(),
+      title: 'Step 2',
+      cards: [],
+    },
+    {
+      id: generateId(),
+      title: 'Step 3',
+      cards: [],
+    },
+  ],
+});
+
+export const createEmptyProject = (name: string = 'New Project'): { project: ReturnType<typeof createProjectWithPersona>['project']; personaId: string } => {
+  const persona = createEmptyPersona('Persona 1');
+  return {
+    project: {
+      id: generateId(),
+      name,
+      personas: [persona],
+      activePersonaId: persona.id,
+    },
+    personaId: persona.id,
+  };
+};
+
+const createProjectWithPersona = (name: string, persona: Persona) => ({
+  project: {
+    id: generateId(),
+    name,
+    personas: [persona],
+    activePersonaId: persona.id,
   },
+  personaId: persona.id,
+});
+
+// Sample data for demo
+const samplePersona: Persona = {
+  id: 'persona-1',
+  name: 'Alex Chen',
+  description: 'A busy professional who wants to protect their household electronics and appliances with minimal effort. Values convenience and peace of mind.',
+  goals: [
+    'Easily register devices for protection',
+    'Quick claim submission when issues arise',
+    'Clear visibility of coverage status',
+  ],
+  painPoints: [
+    'Too many steps to submit a claim',
+    'Unclear warranty coverage terms',
+    'Difficulty tracking multiple devices',
+  ],
   columns: [
     {
       id: 'col-1',
@@ -69,16 +119,11 @@ export const initialBoard: JourneyBoard = {
           title: 'System displays coverage status indicators',
           tags: ['system'],
         },
-        {
-          id: 'card-8',
-          title: 'Quick action: Add new device',
-          tags: ['user'],
-        },
       ],
     },
     {
       id: 'col-4',
-      title: 'Device Details Page',
+      title: 'Device Details',
       cards: [
         {
           id: 'card-9',
@@ -91,16 +136,11 @@ export const initialBoard: JourneyBoard = {
           description: 'Receipt, photos, manual',
           tags: ['user'],
         },
-        {
-          id: 'card-11',
-          title: 'System extracts data via OCR',
-          tags: ['system'],
-        },
       ],
     },
     {
       id: 'col-5',
-      title: 'Add Claim / Upload Evidence',
+      title: 'Claims',
       cards: [
         {
           id: 'card-12',
@@ -112,60 +152,19 @@ export const initialBoard: JourneyBoard = {
           title: 'Upload photos of damage/issue',
           tags: ['user'],
         },
-        {
-          id: 'card-14',
-          title: 'System validates uploaded files',
-          tags: ['system'],
-        },
-        {
-          id: 'card-15',
-          title: 'Edge: Low-quality image rejection',
-          description: 'Prompt user to retake photo',
-          tags: ['system', 'edge'],
-        },
-      ],
-    },
-    {
-      id: 'col-6',
-      title: 'Ask Poli / Chat',
-      cards: [
-        {
-          id: 'card-16',
-          title: 'User asks Poli about warranty coverage',
-          tags: ['user'],
-        },
-        {
-          id: 'card-17',
-          title: 'AI provides contextual answer from manual',
-          tags: ['system'],
-        },
-        {
-          id: 'card-18',
-          title: 'Escalate to human support if needed',
-          tags: ['edge'],
-        },
-      ],
-    },
-    {
-      id: 'col-7',
-      title: 'Admin Panel',
-      cards: [
-        {
-          id: 'card-19',
-          title: 'Admin reviews pending claims',
-          tags: ['admin'],
-        },
-        {
-          id: 'card-20',
-          title: 'Admin flags low-confidence OCR entries',
-          tags: ['admin'],
-        },
-        {
-          id: 'card-21',
-          title: 'Approve or reject claim with notes',
-          tags: ['admin'],
-        },
       ],
     },
   ],
+};
+
+export const initialAppState: AppState = {
+  projects: [
+    {
+      id: 'project-1',
+      name: 'Device Protection App',
+      personas: [samplePersona],
+      activePersonaId: 'persona-1',
+    },
+  ],
+  activeProjectId: 'project-1',
 };

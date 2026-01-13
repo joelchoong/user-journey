@@ -1,17 +1,17 @@
-import { JourneyColumn as JourneyColumnType, JourneyCard, JourneyBoard as JourneyBoardType } from '@/types/journey';
+import { JourneyColumn as JourneyColumnType, JourneyCard } from '@/types/journey';
 import { JourneyColumn } from './JourneyColumn';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
-import { Plus } from 'lucide-react';
+import { Plus, Inbox } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface JourneyBoardProps {
-  board: JourneyBoardType;
-  onBoardChange: (board: JourneyBoardType) => void;
+  columns: JourneyColumnType[];
+  onColumnsChange: (columns: JourneyColumnType[]) => void;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
+export const JourneyBoard = ({ columns, onColumnsChange }: JourneyBoardProps) => {
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
 
@@ -23,16 +23,16 @@ export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
 
     // Reordering columns
     if (type === 'column') {
-      const newColumns = Array.from(board.columns);
+      const newColumns = Array.from(columns);
       const [removed] = newColumns.splice(source.index, 1);
       newColumns.splice(destination.index, 0, removed);
-      onBoardChange({ ...board, columns: newColumns });
+      onColumnsChange(newColumns);
       return;
     }
 
     // Moving cards
-    const sourceColumn = board.columns.find((col) => col.id === source.droppableId);
-    const destColumn = board.columns.find((col) => col.id === destination.droppableId);
+    const sourceColumn = columns.find((col) => col.id === source.droppableId);
+    const destColumn = columns.find((col) => col.id === destination.droppableId);
 
     if (!sourceColumn || !destColumn) return;
 
@@ -42,10 +42,10 @@ export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
       const [removed] = newCards.splice(source.index, 1);
       newCards.splice(destination.index, 0, removed);
 
-      const newColumns = board.columns.map((col) =>
+      const newColumns = columns.map((col) =>
         col.id === sourceColumn.id ? { ...col, cards: newCards } : col
       );
-      onBoardChange({ ...board, columns: newColumns });
+      onColumnsChange(newColumns);
     } else {
       // Moving between columns
       const sourceCards = Array.from(sourceColumn.cards);
@@ -53,12 +53,12 @@ export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
       const [removed] = sourceCards.splice(source.index, 1);
       destCards.splice(destination.index, 0, removed);
 
-      const newColumns = board.columns.map((col) => {
+      const newColumns = columns.map((col) => {
         if (col.id === sourceColumn.id) return { ...col, cards: sourceCards };
         if (col.id === destColumn.id) return { ...col, cards: destCards };
         return col;
       });
-      onBoardChange({ ...board, columns: newColumns });
+      onColumnsChange(newColumns);
     }
   };
 
@@ -68,19 +68,19 @@ export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
       title: 'New Step',
       cards: [],
     };
-    onBoardChange({ ...board, columns: [...board.columns, newColumn] });
+    onColumnsChange([...columns, newColumn]);
   };
 
   const updateColumn = (columnId: string, updatedColumn: JourneyColumnType) => {
-    const newColumns = board.columns.map((col) =>
+    const newColumns = columns.map((col) =>
       col.id === columnId ? updatedColumn : col
     );
-    onBoardChange({ ...board, columns: newColumns });
+    onColumnsChange(newColumns);
   };
 
   const deleteColumn = (columnId: string) => {
-    const newColumns = board.columns.filter((col) => col.id !== columnId);
-    onBoardChange({ ...board, columns: newColumns });
+    const newColumns = columns.filter((col) => col.id !== columnId);
+    onColumnsChange(newColumns);
   };
 
   const addCard = (columnId: string) => {
@@ -89,29 +89,52 @@ export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
       title: 'New action',
       tags: ['user'],
     };
-    const newColumns = board.columns.map((col) =>
+    const newColumns = columns.map((col) =>
       col.id === columnId ? { ...col, cards: [...col.cards, newCard] } : col
     );
-    onBoardChange({ ...board, columns: newColumns });
+    onColumnsChange(newColumns);
   };
 
   const updateCard = (columnId: string, cardId: string, updatedCard: JourneyCard) => {
-    const newColumns = board.columns.map((col) =>
+    const newColumns = columns.map((col) =>
       col.id === columnId
         ? { ...col, cards: col.cards.map((c) => (c.id === cardId ? updatedCard : c)) }
         : col
     );
-    onBoardChange({ ...board, columns: newColumns });
+    onColumnsChange(newColumns);
   };
 
   const deleteCard = (columnId: string, cardId: string) => {
-    const newColumns = board.columns.map((col) =>
+    const newColumns = columns.map((col) =>
       col.id === columnId
         ? { ...col, cards: col.cards.filter((c) => c.id !== cardId) }
         : col
     );
-    onBoardChange({ ...board, columns: newColumns });
+    onColumnsChange(newColumns);
   };
+
+  if (columns.length === 0) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+            <Inbox className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-display font-semibold text-foreground mb-2">No journey steps yet</h3>
+          <p className="text-sm text-muted-foreground mb-4">Start building your user journey by adding steps</p>
+          <motion.button
+            onClick={addColumn}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add First Step
+          </motion.button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -124,7 +147,7 @@ export const JourneyBoard = ({ board, onBoardChange }: JourneyBoardProps) => {
               className="flex gap-4 p-6 min-h-full"
               style={{ minWidth: 'fit-content' }}
             >
-              {board.columns.map((column, index) => (
+              {columns.map((column, index) => (
                 <JourneyColumn
                   key={column.id}
                   column={column}
