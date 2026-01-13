@@ -1,4 +1,4 @@
-import { Share2, Link, FileDown, Check, Upload, LogOut, Settings, User } from 'lucide-react';
+import { Share2, Link, FileDown, Check, Upload, LogOut, Settings, Info } from 'lucide-react';
 import { Project, Persona, JourneyColumn } from '@/types/journey';
 import { ProjectSelector } from './ProjectSelector';
 import { PersonaSelector } from './PersonaSelector';
@@ -203,7 +203,7 @@ export const Header = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute top-full right-0 mt-2 z-50 w-48 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
+                  className="absolute top-full right-0 mt-2 z-50 w-56 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
                 >
                   <div className="p-1">
                     <button
@@ -217,13 +217,24 @@ export const Header = ({
                       )}
                       {copied ? 'Copied!' : 'Copy Link'}
                     </button>
-                    <button
-                      onClick={handleSaveAsPDF}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                      <FileDown className="w-4 h-4 text-muted-foreground" />
-                      Save as PDF
-                    </button>
+                    <div className="relative group">
+                      <button
+                        onClick={handleSaveAsPDF}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+                      >
+                        <FileDown className="w-4 h-4 text-muted-foreground" />
+                        <span className="flex-1 text-left">Save as PDF</span>
+                        <div className="relative">
+                          <Info className="w-3.5 h-3.5 text-muted-foreground" />
+                          <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block z-50">
+                            <div className="bg-foreground text-background text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+                              Shows up to 10 cards per column
+                              <div className="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground" />
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               </>
