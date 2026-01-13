@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { JourneyBoard } from '@/components/JourneyBoard';
+import { PrintableJourney } from '@/components/PrintableJourney';
 import { AppState, Project, Persona, JourneyColumn } from '@/types/journey';
 import { initialAppState, createEmptyProject, createEmptyPersona } from '@/data/initialBoard';
 import { Inbox, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const STORAGE_KEY = 'upstack-story-app';
 
@@ -135,6 +137,16 @@ const Index = () => {
     handleColumnsChange([...existingColumns, ...newColumns]);
   };
 
+  // Save as PDF
+  const handleSaveAsPDF = useCallback(() => {
+    if (!activePersona) {
+      toast.error('No journey to export');
+      return;
+    }
+    window.print();
+    toast.success('Print dialog opened');
+  }, [activePersona]);
+
   // Empty state for no project
   if (!activeProject) {
     return (
@@ -228,8 +240,16 @@ const Index = () => {
         onDeletePersona={handleDeletePersona}
         onUpdatePersona={handleUpdatePersona}
         onImportColumns={handleImportColumns}
+        onSaveAsPDF={handleSaveAsPDF}
       />
       <JourneyBoard columns={activePersona.columns} onColumnsChange={handleColumnsChange} />
+      
+      {/* Printable Journey - Hidden, only shows when printing */}
+      <PrintableJourney
+        columns={activePersona.columns}
+        persona={activePersona}
+        projectName={activeProject.name}
+      />
     </div>
   );
 };
