@@ -70,12 +70,16 @@ export const JourneyColumn = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={`flex-shrink-0 w-72 bg-column rounded-xl column-shadow flex flex-col max-h-full transition-transform ${
+          className={`flex-shrink-0 w-72 bg-column rounded-xl column-shadow flex flex-col transition-transform ${
             snapshot.isDragging ? 'rotate-1 scale-105' : ''
           }`}
+          style={{
+            ...provided.draggableProps.style,
+            maxHeight: 'calc(100vh - 140px)',
+          }}
         >
           {/* Column Header */}
-          <div className="p-3 flex items-center gap-2 border-b border-border/50">
+          <div className="p-3 flex items-center gap-2">
             <div
               {...provided.dragHandleProps}
               className="cursor-grab active:cursor-grabbing"
@@ -108,6 +112,16 @@ export const JourneyColumn = ({
               {column.cards.length}
             </span>
 
+            {/* Add Card Button */}
+            <button
+              onClick={onAddCard}
+              className="p-1.5 rounded hover:bg-primary/10 hover:text-primary transition-colors"
+              title="Add card"
+            >
+              <Plus className="w-4 h-4 text-muted-foreground hover:text-primary" />
+            </button>
+
+            {/* Menu */}
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setShowMenu(!showMenu)}
@@ -139,16 +153,16 @@ export const JourneyColumn = ({
             </div>
           </div>
 
-          {/* Cards Container */}
+          {/* Cards Container - Scrollable */}
           <Droppable droppableId={column.id} type="card">
             {(provided, snapshot) => (
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex-1 p-2 overflow-y-auto scrollbar-thin transition-colors ${
+                className={`flex-1 px-2 pb-2 overflow-y-auto scrollbar-thin transition-colors ${
                   snapshot.isDraggingOver ? 'bg-primary/5' : ''
                 }`}
-                style={{ minHeight: 100 }}
+                style={{ minHeight: 60 }}
               >
                 <AnimatePresence>
                   {column.cards.map((card, cardIndex) => (
@@ -165,17 +179,6 @@ export const JourneyColumn = ({
               </div>
             )}
           </Droppable>
-
-          {/* Add Card Button */}
-          <div className="p-2 border-t border-border/50">
-            <button
-              onClick={onAddCard}
-              className="w-full flex items-center justify-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Add Card
-            </button>
-          </div>
         </div>
       )}
     </Draggable>
