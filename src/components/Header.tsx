@@ -1,11 +1,11 @@
-import { Share2, Link, FileDown, Check, Upload, LogOut, Settings, Info } from 'lucide-react';
-import { Project, Persona, JourneyColumn } from '@/types/journey';
-import { ProjectSelector } from './ProjectSelector';
-import { PersonaSelector } from './PersonaSelector';
-import { ImportSpreadsheet } from './ImportSpreadsheet';
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
+import { Share2, Link, FileDown, Check, Upload, LogOut, Settings, Info } from "lucide-react";
+import { Project, Persona, JourneyColumn } from "@/types/journey";
+import { ProjectSelector } from "./ProjectSelector";
+import { PersonaSelector } from "./PersonaSelector";
+import { ImportSpreadsheet } from "./ImportSpreadsheet";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 interface HeaderProps {
   projects: Project[];
@@ -46,8 +46,12 @@ export const Header = ({
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   // Mock user data - replace with actual auth later
-  const userName = 'John Doe';
-  const userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+  const userName = "John Doe";
+  const userInitials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -58,15 +62,15 @@ export const Header = ({
         setIsProfileOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleCopyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
     setCopied(true);
-    toast.success('Link copied to clipboard!');
+    toast.success("Link copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -79,12 +83,12 @@ export const Header = ({
 
   const handleProfileSettings = () => {
     setIsProfileOpen(false);
-    toast.info('Profile settings coming soon!');
+    toast.info("Profile settings coming soon!");
   };
 
   const handleSignOut = () => {
     setIsProfileOpen(false);
-    toast.info('Sign out coming soon!');
+    toast.info("Sign out coming soon!");
   };
 
   return (
@@ -95,7 +99,7 @@ export const Header = ({
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className={`w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors ${
-              isProfileOpen ? 'ring-2 ring-primary/30 ring-offset-2 ring-offset-background' : ''
+              isProfileOpen ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""
             }`}
           >
             {userInitials}
@@ -186,8 +190,8 @@ export const Header = ({
             onClick={() => setIsShareOpen(!isShareOpen)}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
               isShareOpen
-                ? 'bg-primary/10 border-primary/30 text-primary'
-                : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
+                ? "bg-primary/10 border-primary/30 text-primary"
+                : "border-border hover:bg-muted text-muted-foreground hover:text-foreground"
             }`}
           >
             <Share2 className="w-4 h-4" />
@@ -215,7 +219,7 @@ export const Header = ({
                       ) : (
                         <Link className="w-4 h-4 text-muted-foreground" />
                       )}
-                      {copied ? 'Copied!' : 'Copy Link'}
+                      {copied ? "Copied!" : "Copy Link"}
                     </button>
                     <div className="relative group">
                       <button
@@ -228,7 +232,7 @@ export const Header = ({
                           <Info className="w-3.5 h-3.5 text-muted-foreground" />
                           <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block z-50">
                             <div className="bg-foreground text-background text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-                              Shows up to 10 cards per column
+                              Shows around 10 cards per column
                               <div className="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground" />
                             </div>
                           </div>
@@ -245,11 +249,7 @@ export const Header = ({
 
       {/* Import Dialog */}
       {onImportColumns && (
-        <ImportSpreadsheet
-          isOpen={isImportOpen}
-          onClose={() => setIsImportOpen(false)}
-          onImport={onImportColumns}
-        />
+        <ImportSpreadsheet isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} onImport={onImportColumns} />
       )}
     </header>
   );
