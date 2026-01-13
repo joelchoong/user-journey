@@ -128,12 +128,13 @@ export const ProjectSelector = ({
                       <span
                         className="flex-1 text-sm truncate"
                         onDoubleClick={(e) => handleStartEdit(project, e)}
+                        title="Double-click to rename"
                       >
                         {project.name}
                       </span>
                     )}
 
-                    {projects.length > 1 && (
+                    {projects.length > 1 && editingId !== project.id && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
