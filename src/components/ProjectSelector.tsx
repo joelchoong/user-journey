@@ -1,5 +1,5 @@
 import { Project } from '@/types/journey';
-import { FolderOpen, Plus, ChevronDown, Check, Trash2 } from 'lucide-react';
+import { FolderOpen, Plus, ChevronDown, Check, Trash2, Pencil } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -125,25 +125,33 @@ export const ProjectSelector = ({
                         onClick={(e) => e.stopPropagation()}
                       />
                     ) : (
-                      <span
-                        className="flex-1 text-sm truncate"
-                        onDoubleClick={(e) => handleStartEdit(project, e)}
-                        title="Double-click to rename"
-                      >
+                      <span className="flex-1 text-sm truncate">
                         {project.name}
                       </span>
                     )}
 
-                    {projects.length > 1 && editingId !== project.id && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteProject(project.id);
-                        }}
-                        className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-all"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
-                      </button>
+                    {editingId !== project.id && (
+                      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all">
+                        <button
+                          onClick={(e) => handleStartEdit(project, e)}
+                          className="p-1 rounded hover:bg-muted transition-all"
+                          title="Rename"
+                        >
+                          <Pencil className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                        </button>
+                        {projects.length > 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteProject(project.id);
+                            }}
+                            className="p-1 rounded hover:bg-destructive/10 transition-all"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
