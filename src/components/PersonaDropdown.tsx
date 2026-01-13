@@ -1,15 +1,16 @@
 import { Persona } from '@/types/journey';
-import { User, Target, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { User, Target, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface PersonaPanelProps {
+interface PersonaDropdownProps {
   persona: Persona;
   onUpdate: (persona: Persona) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const PersonaPanel = ({ persona, onUpdate }: PersonaPanelProps) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+export const PersonaDropdown = ({ persona, onUpdate, isOpen, onClose }: PersonaDropdownProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedPersona, setEditedPersona] = useState(persona);
 
@@ -30,66 +31,57 @@ export const PersonaPanel = ({ persona, onUpdate }: PersonaPanelProps) => {
   };
 
   return (
-    <div className="bg-card border-b border-border">
-      <div className="max-w-full px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editedPersona.name}
-                  onChange={(e) => setEditedPersona({ ...editedPersona, name: e.target.value })}
-                  onKeyDown={handleKeyDown}
-                  className="text-lg font-display font-semibold text-foreground bg-transparent border-b border-primary focus:outline-none"
-                  autoFocus
-                />
-              ) : (
-                <h2
-                  className="text-lg font-display font-semibold text-foreground cursor-pointer hover:text-primary transition-colors"
-                  onClick={() => setIsEditing(true)}
-                >
-                  {persona.name}
-                </h2>
-              )}
-              <p className="text-sm text-muted-foreground">Persona</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={onClose} />
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 mt-2 z-50 w-[600px] max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-lg overflow-hidden"
           >
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-muted-foreground" />
-            )}
-          </button>
-        </div>
+            {/* Header */}
+            <div className="p-4 border-b border-border flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <User className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedPersona.name}
+                    onChange={(e) => setEditedPersona({ ...editedPersona, name: e.target.value })}
+                    onKeyDown={handleKeyDown}
+                    className="text-lg font-display font-semibold text-foreground bg-transparent border-b border-primary focus:outline-none w-full"
+                    autoFocus
+                  />
+                ) : (
+                  <h3
+                    className="text-lg font-display font-semibold text-foreground cursor-pointer hover:text-primary transition-colors"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    {persona.name}
+                  </h3>
+                )}
+                <p className="text-sm text-muted-foreground">Persona</p>
+              </div>
+            </div>
 
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Content */}
+            <div className="p-4 max-h-[400px] overflow-y-auto scrollbar-thin">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Description */}
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Description</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Description</p>
                   {isEditing ? (
                     <textarea
                       value={editedPersona.description}
                       onChange={(e) => setEditedPersona({ ...editedPersona, description: e.target.value })}
                       onKeyDown={handleKeyDown}
                       className="w-full text-sm text-foreground bg-muted/50 rounded-lg p-2 border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-                      rows={3}
+                      rows={4}
                     />
                   ) : (
                     <p
@@ -104,13 +96,13 @@ export const PersonaPanel = ({ persona, onUpdate }: PersonaPanelProps) => {
                 {/* Goals */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-primary" />
-                    <p className="text-sm font-medium text-muted-foreground">Goals</p>
+                    <Target className="w-3.5 h-3.5 text-primary" />
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Goals</p>
                   </div>
-                  <ul className="space-y-1">
+                  <ul className="space-y-1.5">
                     {persona.goals.map((goal, index) => (
                       <li key={index} className="text-sm text-foreground flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
+                        <span className="text-primary mt-0.5">•</span>
                         {goal}
                       </li>
                     ))}
@@ -120,13 +112,13 @@ export const PersonaPanel = ({ persona, onUpdate }: PersonaPanelProps) => {
                 {/* Pain Points */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-accent" />
-                    <p className="text-sm font-medium text-muted-foreground">Pain Points</p>
+                    <AlertTriangle className="w-3.5 h-3.5 text-accent" />
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Pain Points</p>
                   </div>
-                  <ul className="space-y-1">
+                  <ul className="space-y-1.5">
                     {persona.painPoints.map((point, index) => (
                       <li key={index} className="text-sm text-foreground flex items-start gap-2">
-                        <span className="text-accent mt-1">•</span>
+                        <span className="text-accent mt-0.5">•</span>
                         {point}
                       </li>
                     ))}
@@ -153,10 +145,10 @@ export const PersonaPanel = ({ persona, onUpdate }: PersonaPanelProps) => {
                   </button>
                 </div>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };

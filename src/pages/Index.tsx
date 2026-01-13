@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
-import { PersonaPanel } from '@/components/PersonaPanel';
 import { JourneyBoard } from '@/components/JourneyBoard';
 import { JourneyBoard as JourneyBoardType, Persona } from '@/types/journey';
 import { initialBoard } from '@/data/initialBoard';
@@ -30,8 +29,11 @@ const Index = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <Header />
-      <PersonaPanel persona={board.persona} onUpdate={handlePersonaUpdate} />
+      <Header 
+        projectName="Upstack Story" 
+        persona={board.persona} 
+        onPersonaUpdate={handlePersonaUpdate} 
+      />
       <JourneyBoard board={board} onBoardChange={setBoard} />
     </div>
   );
