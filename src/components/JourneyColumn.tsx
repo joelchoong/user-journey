@@ -1,4 +1,4 @@
-import { JourneyColumn as JourneyColumnType, JourneyCard as JourneyCardType } from '@/types/journey';
+import { JourneyColumn as JourneyColumnType, JourneyCard as JourneyCardType, Workflow } from '@/types/journey';
 import { JourneyCard } from './JourneyCard';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { useState, useRef, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface JourneyColumnProps {
   column: JourneyColumnType;
   index: number;
+  workflows?: Workflow[];
   onUpdateColumn: (column: JourneyColumnType) => void;
   onDeleteColumn: () => void;
   onAddCard: () => void;
@@ -18,6 +19,7 @@ interface JourneyColumnProps {
 export const JourneyColumn = ({
   column,
   index,
+  workflows,
   onUpdateColumn,
   onDeleteColumn,
   onAddCard,
@@ -70,9 +72,8 @@ export const JourneyColumn = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={`flex-shrink-0 w-72 bg-column rounded-xl column-shadow flex flex-col transition-transform ${
-            snapshot.isDragging ? 'rotate-1 scale-105' : ''
-          }`}
+          className={`flex-shrink-0 w-72 bg-column rounded-xl column-shadow flex flex-col transition-transform ${snapshot.isDragging ? 'rotate-1 scale-105' : ''
+            }`}
           style={{
             ...provided.draggableProps.style,
             maxHeight: 'calc(100vh - 140px)',
@@ -135,8 +136,25 @@ export const JourneyColumn = ({
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-1 z-10 bg-popover border border-border rounded-lg shadow-lg p-1 min-w-[120px]"
+                    className="absolute right-0 top-full mt-1 z-10 bg-popover border border-border rounded-lg shadow-lg p-1 min-w-[160px]"
                   >
+                    {/* Workflow Selection */}
+                    <div className="px-2 py-1.5 border-b border-border/50 mb-1">
+                      <p className="text-xs font-medium text-muted-foreground mb-1.5">Workflow</p>
+                      <select
+                        className="w-full text-xs bg-muted/50 border-input rounded h-7 px-1"
+                        value={column.workflowId || ''}
+                        onChange={(e) => onUpdateColumn({ ...column, workflowId: e.target.value || undefined })}
+                      >
+                        <option value="">No Workflow</option>
+                        {workflows?.map((wf) => (
+                          <option key={wf.id} value={wf.id}>
+                            {wf.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
                     <button
                       onClick={() => {
                         onDeleteColumn();
@@ -145,7 +163,7 @@ export const JourneyColumn = ({
                       className="w-full text-left px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded flex items-center gap-2 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Delete
+                      Delete Column
                     </button>
                   </motion.div>
                 )}
@@ -159,9 +177,8 @@ export const JourneyColumn = ({
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex-1 px-2 pb-2 overflow-y-auto scrollbar-thin transition-colors ${
-                  snapshot.isDraggingOver ? 'bg-primary/5' : ''
-                }`}
+                className={`flex-1 px-2 pb-2 overflow-y-auto scrollbar-thin transition-colors ${snapshot.isDraggingOver ? 'bg-primary/5' : ''
+                  }`}
                 style={{ minHeight: 60 }}
               >
                 <AnimatePresence>

@@ -65,10 +65,16 @@ const samplePersona: Persona = {
     'Unclear warranty coverage terms',
     'Difficulty tracking multiple devices',
   ],
+  workflows: [
+    { id: 'wf-onboarding', title: 'Onboarding', color: '#E0F2FE' },
+    { id: 'wf-usage', title: 'Active Usage', color: '#F0FDF4' },
+    { id: 'wf-support', title: 'Support & Claims', color: '#FEF2F2' },
+  ],
   columns: [
     {
       id: 'col-1',
       title: 'Evidence Event / Trigger',
+      workflowId: 'wf-onboarding',
       cards: [
         {
           id: 'card-1',
@@ -86,6 +92,7 @@ const samplePersona: Persona = {
     {
       id: 'col-2',
       title: 'Registration & Authentication',
+      workflowId: 'wf-onboarding',
       cards: [
         {
           id: 'card-3',
@@ -108,6 +115,7 @@ const samplePersona: Persona = {
     {
       id: 'col-3',
       title: 'Home Page',
+      workflowId: 'wf-usage',
       cards: [
         {
           id: 'card-6',
@@ -124,6 +132,7 @@ const samplePersona: Persona = {
     {
       id: 'col-4',
       title: 'Device Details',
+      workflowId: 'wf-usage',
       cards: [
         {
           id: 'card-9',
@@ -141,6 +150,7 @@ const samplePersona: Persona = {
     {
       id: 'col-5',
       title: 'Claims',
+      workflowId: 'wf-support',
       cards: [
         {
           id: 'card-12',
@@ -166,5 +176,6 @@ export const initialAppState: AppState = {
       activePersonaId: 'persona-1',
     },
   ],
+
   activeProjectId: 'project-1',
 };

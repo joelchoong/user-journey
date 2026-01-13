@@ -120,11 +120,11 @@ const Index = () => {
       projects: prev.projects.map(p =>
         p.id === activeProject.id
           ? {
-              ...p,
-              personas: p.personas.map(per =>
-                per.id === activePersona.id ? { ...per, columns } : per
-              ),
-            }
+            ...p,
+            personas: p.personas.map(per =>
+              per.id === activePersona.id ? { ...per, columns } : per
+            ),
+          }
           : p
       ),
     }));
@@ -242,8 +242,12 @@ const Index = () => {
         onImportColumns={handleImportColumns}
         onSaveAsPDF={handleSaveAsPDF}
       />
-      <JourneyBoard columns={activePersona.columns} onColumnsChange={handleColumnsChange} />
-      
+      <JourneyBoard
+        columns={activePersona.columns}
+        workflows={activePersona.workflows}
+        onColumnsChange={handleColumnsChange}
+      />
+
       {/* Printable Journey - Hidden, only shows when printing */}
       <PrintableJourney
         columns={activePersona.columns}

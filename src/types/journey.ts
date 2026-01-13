@@ -7,10 +7,17 @@ export interface JourneyCard {
   tags: CardTag[];
 }
 
+export interface Workflow {
+  id: string;
+  title: string;
+  color?: string;
+}
+
 export interface JourneyColumn {
   id: string;
   title: string;
   cards: JourneyCard[];
+  workflowId?: string;
 }
 
 export interface Persona {
@@ -20,6 +27,7 @@ export interface Persona {
   goals: string[];
   painPoints: string[];
   columns: JourneyColumn[];
+  workflows?: Workflow[];
 }
 
 export interface Project {

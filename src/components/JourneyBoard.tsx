@@ -1,17 +1,19 @@
-import { JourneyColumn as JourneyColumnType, JourneyCard } from '@/types/journey';
+import { JourneyColumn as JourneyColumnType, JourneyCard, Workflow } from '@/types/journey';
 import { JourneyColumn } from './JourneyColumn';
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
 import { Plus, Inbox } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 
 interface JourneyBoardProps {
   columns: JourneyColumnType[];
+  workflows?: Workflow[];
   onColumnsChange: (columns: JourneyColumnType[]) => void;
 }
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const JourneyBoard = ({ columns, onColumnsChange }: JourneyBoardProps) => {
+export const JourneyBoard = ({ columns, workflows, onColumnsChange }: JourneyBoardProps) => {
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
 
@@ -113,6 +115,27 @@ export const JourneyBoard = ({ columns, onColumnsChange }: JourneyBoardProps) =>
     onColumnsChange(newColumns);
   };
 
+  const workflowGroups = useMemo(() => {
+    const groups: { workflowId?: string; start: number; end: number }[] = [];
+    let currentGroup: { workflowId?: string; start: number; end: number } | null = null;
+
+    columns.forEach((col, index) => {
+      // Grid lines are 1-based. Column 0 is at grid line 1.
+      if (currentGroup && currentGroup.workflowId === col.workflowId) {
+        currentGroup.end = index + 2;
+      } else {
+        if (currentGroup) groups.push(currentGroup);
+        currentGroup = {
+          workflowId: col.workflowId,
+          start: index + 1,
+          end: index + 2
+        };
+      }
+    });
+    if (currentGroup) groups.push(currentGroup);
+    return groups;
+  }, [columns]);
+
   if (columns.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -144,33 +167,66 @@ export const JourneyBoard = ({ columns, onColumnsChange }: JourneyBoardProps) =>
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="flex gap-4 p-6 min-h-full"
-              style={{ minWidth: 'fit-content' }}
+              className="grid grid-rows-[auto_1fr] gap-x-4 gap-y-0 p-6 min-h-full"
+              style={{
+                gridTemplateColumns: `repeat(${columns.length}, 18rem) 18rem`,
+                minWidth: 'fit-content'
+              }}
             >
+              {/* Workflow Headers */}
+              {workflowGroups.map((group, i) => {
+                const workflow = workflows?.find(w => w.id === group.workflowId);
+                if (!workflow && !group.workflowId) return null;
+
+                return (
+                  <div
+                    key={`wf-group-${i}`}
+                    style={{ gridColumn: `${group.start} / ${group.end}`, gridRow: 1 }}
+                    className="mb-2 px-1"
+                  >
+                    <div
+                      className="text-xs font-semibold px-3 py-1.5 rounded-t-lg border-t border-x border-border/50 truncate flex items-center gap-2"
+                      style={{ backgroundColor: workflow?.color || '#f3f4f6', color: '#1f2937' }}
+                    >
+                      {workflow?.title || 'Unassigned Steps'}
+                    </div>
+                    <div className="h-1 w-full" style={{ backgroundColor: workflow?.color || '#e5e7eb' }}></div>
+                  </div>
+                );
+              })}
+
               {columns.map((column, index) => (
-                <JourneyColumn
+                <div
                   key={column.id}
-                  column={column}
-                  index={index}
-                  onUpdateColumn={(updated) => updateColumn(column.id, updated)}
-                  onDeleteColumn={() => deleteColumn(column.id)}
-                  onAddCard={() => addCard(column.id)}
-                  onUpdateCard={(cardId, card) => updateCard(column.id, cardId, card)}
-                  onDeleteCard={(cardId) => deleteCard(column.id, cardId)}
-                />
+                  style={{ gridColumn: index + 1, gridRow: 2 }}
+                  className="h-full"
+                >
+                  <JourneyColumn
+                    column={column}
+                    index={index}
+                    workflows={workflows}
+                    onUpdateColumn={(updated) => updateColumn(column.id, updated)}
+                    onDeleteColumn={() => deleteColumn(column.id)}
+                    onAddCard={() => addCard(column.id)}
+                    onUpdateCard={(cardId, card) => updateCard(column.id, cardId, card)}
+                    onDeleteCard={(cardId) => deleteCard(column.id, cardId)}
+                  />
+                </div>
               ))}
               {provided.placeholder}
 
               {/* Add Column Button */}
-              <motion.button
-                onClick={addColumn}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-shrink-0 w-72 h-32 border-2 border-dashed border-border rounded-xl flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all"
-              >
-                <Plus className="w-5 h-5" />
-                <span className="font-medium">Add Step</span>
-              </motion.button>
+              <div style={{ gridColumn: columns.length + 1, gridRow: 2 }}>
+                <motion.button
+                  onClick={addColumn}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-72 h-32 border-2 border-dashed border-border rounded-xl flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="font-medium">Add Step</span>
+                </motion.button>
+              </div>
             </div>
           )}
         </Droppable>
