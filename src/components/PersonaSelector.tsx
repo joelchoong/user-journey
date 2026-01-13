@@ -24,7 +24,10 @@ export const PersonaSelector = ({
   const [showDetails, setShowDetails] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedPersona, setEditedPersona] = useState<Persona | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -32,6 +35,7 @@ export const PersonaSelector = ({
         setIsOpen(false);
         setShowDetails(false);
         setIsEditing(false);
+        setEditingId(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -43,6 +47,29 @@ export const PersonaSelector = ({
       setEditedPersona(activePersona);
     }
   }, [activePersona]);
+
+  useEffect(() => {
+    if (editingId && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingId]);
+
+  const handleStartEdit = (persona: Persona, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(persona.id);
+    setEditName(persona.name);
+  };
+
+  const handleSaveEdit = (personaId: string) => {
+    if (editName.trim()) {
+      const persona = personas.find(p => p.id === personaId);
+      if (persona) {
+        onUpdatePersona({ ...persona, name: editName.trim() });
+      }
+    }
+    setEditingId(null);
+  };
 
   const handleSavePersona = () => {
     if (editedPersona) {
@@ -102,7 +129,9 @@ export const PersonaSelector = ({
                             persona.id === activePersona?.id ? 'bg-primary/10' : 'hover:bg-muted'
                           }`}
                           onClick={() => {
-                            onSelectPersona(persona.id);
+                            if (editingId !== persona.id) {
+                              onSelectPersona(persona.id);
+                            }
                           }}
                         >
                           {persona.id === activePersona?.id && (
@@ -110,9 +139,31 @@ export const PersonaSelector = ({
                           )}
                           {persona.id !== activePersona?.id && <div className="w-4" />}
 
-                          <span className="flex-1 text-sm truncate">{persona.name}</span>
+                          {editingId === persona.id ? (
+                            <input
+                              ref={inputRef}
+                              type="text"
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSaveEdit(persona.id);
+                                if (e.key === 'Escape') setEditingId(null);
+                              }}
+                              onBlur={() => handleSaveEdit(persona.id)}
+                              className="flex-1 text-sm bg-transparent border-b border-primary focus:outline-none"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          ) : (
+                            <span
+                              className="flex-1 text-sm truncate"
+                              onDoubleClick={(e) => handleStartEdit(persona, e)}
+                              title="Double-click to rename"
+                            >
+                              {persona.name}
+                            </span>
+                          )}
 
-                          {personas.length > 1 && (
+                          {personas.length > 1 && editingId !== persona.id && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
