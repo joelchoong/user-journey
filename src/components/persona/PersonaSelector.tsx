@@ -2,8 +2,8 @@ import { Persona } from '@/types/journey';
 import { User, ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PersonaList } from './persona/PersonaList';
-import { PersonaDetails } from './persona/PersonaDetails';
+import { PersonaList } from './PersonaList';
+import { PersonaDetails } from './PersonaDetails';
 
 interface PersonaSelectorProps {
   personas: Persona[];
@@ -45,8 +45,8 @@ export const PersonaSelector = ({
           setShowDetails(false);
         }}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${isOpen
-            ? 'bg-primary/10 border-primary/30 text-primary'
-            : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
+          ? 'bg-primary/10 border-primary/30 text-primary'
+          : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
           }`}
       >
         <User className="w-4 h-4" />

@@ -1,6 +1,6 @@
 import { Header } from '@/components/Header';
-import { JourneyBoard } from '@/components/JourneyBoard';
-import { PrintableJourney } from '@/components/PrintableJourney';
+import { JourneyBoard } from '@/components/board/JourneyBoard';
+import { PrintableJourney } from '@/components/board/PrintableJourney';
 import { Inbox, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useJourney } from '@/hooks/useJourney';

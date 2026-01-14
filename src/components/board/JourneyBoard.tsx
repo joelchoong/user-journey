@@ -1,150 +1,31 @@
-import { JourneyColumn as JourneyColumnType, JourneyCard, Workflow } from '@/types/journey';
+import { JourneyColumn as JourneyColumnType, Workflow } from '@/types/journey';
 import { JourneyColumn } from './JourneyColumn';
 import { WorkflowHeader } from './WorkflowHeader';
-import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { Plus, Inbox } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { useBoard } from '@/hooks/useBoard';
 
 interface JourneyBoardProps {
   columns: JourneyColumnType[];
   workflows?: Workflow[];
   onColumnsChange: (columns: JourneyColumnType[]) => void;
   onUpdateWorkflow?: (workflowId: string, updates: Partial<Workflow>) => void;
-  onAddWorkflow?: (title: string, color: string) => void;
+  onAddWorkflow?: (title: string, color: string) => string;
 }
 
-const generateId = () => Math.random().toString(36).substr(2, 9);
-
 export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWorkflow, onAddWorkflow }: JourneyBoardProps) => {
-  const handleDragEnd = (result: DropResult) => {
-    const { source, destination, type } = result;
-
-    if (!destination) return;
-
-    if (source.droppableId === destination.droppableId && source.index === destination.index) {
-      return;
-    }
-
-    // Reordering columns
-    if (type === 'column') {
-      const newColumns = Array.from(columns);
-      const [removed] = newColumns.splice(source.index, 1);
-      newColumns.splice(destination.index, 0, removed);
-      onColumnsChange(newColumns);
-      return;
-    }
-
-    // Moving cards
-    const sourceColumn = columns.find((col) => col.id === source.droppableId);
-    const destColumn = columns.find((col) => col.id === destination.droppableId);
-
-    if (!sourceColumn || !destColumn) return;
-
-    if (sourceColumn.id === destColumn.id) {
-      // Moving within the same column
-      const newCards = Array.from(sourceColumn.cards);
-      const [removed] = newCards.splice(source.index, 1);
-      newCards.splice(destination.index, 0, removed);
-
-      const newColumns = columns.map((col) =>
-        col.id === sourceColumn.id ? { ...col, cards: newCards } : col
-      );
-      onColumnsChange(newColumns);
-    } else {
-      // Moving between columns
-      const sourceCards = Array.from(sourceColumn.cards);
-      const destCards = Array.from(destColumn.cards);
-      const [removed] = sourceCards.splice(source.index, 1);
-      destCards.splice(destination.index, 0, removed);
-
-      const newColumns = columns.map((col) => {
-        if (col.id === sourceColumn.id) return { ...col, cards: sourceCards };
-        if (col.id === destColumn.id) return { ...col, cards: destCards };
-        return col;
-      });
-      onColumnsChange(newColumns);
-    }
-  };
-
-  const addColumn = () => {
-    const newColumn: JourneyColumnType = {
-      id: generateId(),
-      title: 'New Step',
-      cards: [],
-    };
-    onColumnsChange([...columns, newColumn]);
-  };
-
-  const updateColumn = (columnId: string, updatedColumn: JourneyColumnType) => {
-    const newColumns = columns.map((col) =>
-      col.id === columnId ? updatedColumn : col
-    );
-    onColumnsChange(newColumns);
-  };
-
-  const deleteColumn = (columnId: string) => {
-    const newColumns = columns.filter((col) => col.id !== columnId);
-    onColumnsChange(newColumns);
-  };
-
-  const addCard = (columnId: string) => {
-    const newCard: JourneyCard = {
-      id: generateId(),
-      title: 'New action',
-      tags: ['user'],
-    };
-    const newColumns = columns.map((col) =>
-      col.id === columnId ? { ...col, cards: [...col.cards, newCard] } : col
-    );
-    onColumnsChange(newColumns);
-  };
-
-  const updateCard = (columnId: string, cardId: string, updatedCard: JourneyCard) => {
-    const newColumns = columns.map((col) =>
-      col.id === columnId
-        ? { ...col, cards: col.cards.map((c) => (c.id === cardId ? updatedCard : c)) }
-        : col
-    );
-    onColumnsChange(newColumns);
-  };
-
-  const deleteCard = (columnId: string, cardId: string) => {
-    const newColumns = columns.map((col) =>
-      col.id === columnId
-        ? { ...col, cards: col.cards.filter((c) => c.id !== cardId) }
-        : col
-    );
-    onColumnsChange(newColumns);
-  };
-
-  const handleSetColumnWorkflow = (columnIndex: number, workflowId: string | undefined) => {
-    if (columnIndex < 0 || columnIndex >= columns.length) return;
-    const newColumns = [...columns];
-    newColumns[columnIndex] = { ...newColumns[columnIndex], workflowId };
-    onColumnsChange(newColumns);
-  };
-
-  const workflowGroups = useMemo(() => {
-    const groups: { workflowId?: string; start: number; end: number }[] = [];
-    let currentGroup: { workflowId?: string; start: number; end: number } | null = null;
-
-    columns.forEach((col, index) => {
-      // Grid lines are 1-based. Column 0 is at grid line 1.
-      if (currentGroup && currentGroup.workflowId === col.workflowId) {
-        currentGroup.end = index + 2;
-      } else {
-        if (currentGroup) groups.push(currentGroup);
-        currentGroup = {
-          workflowId: col.workflowId,
-          start: index + 1,
-          end: index + 2
-        };
-      }
-    });
-    if (currentGroup) groups.push(currentGroup);
-    return groups;
-  }, [columns]);
+  const {
+    workflowGroups,
+    handleDragEnd,
+    addColumn,
+    updateColumn,
+    deleteColumn,
+    addCard,
+    updateCard,
+    deleteCard,
+    handleSetColumnWorkflow,
+  } = useBoard({ columns, workflows, onColumnsChange });
 
   if (columns.length === 0) {
     return (

@@ -1,8 +1,8 @@
 import { Upload } from "lucide-react";
 import { Project, Persona, JourneyColumn } from "@/types/journey";
-import { ProjectSelector } from "./ProjectSelector";
-import { PersonaSelector } from "./PersonaSelector";
-import { ImportSpreadsheet } from "./ImportSpreadsheet";
+import { ProjectSelector } from "./project/ProjectSelector";
+import { PersonaSelector } from "./persona/PersonaSelector";
+import { ImportSpreadsheet } from "./import/ImportSpreadsheet";
 import { useState } from "react";
 import { ProfileDropdown } from "./header/ProfileDropdown";
 import { ShareDropdown } from "./header/ShareDropdown";
