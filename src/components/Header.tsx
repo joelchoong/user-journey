@@ -98,9 +98,8 @@ export const Header = ({
         <div className="relative" ref={profileDropdownRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className={`w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors ${
-              isProfileOpen ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""
-            }`}
+            className={`w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors ${isProfileOpen ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""
+              }`}
           >
             {userInitials}
           </button>
@@ -188,11 +187,10 @@ export const Header = ({
         <div className="relative" ref={shareDropdownRef}>
           <button
             onClick={() => setIsShareOpen(!isShareOpen)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
-              isShareOpen
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${isShareOpen
                 ? "bg-primary/10 border-primary/30 text-primary"
                 : "border-border hover:bg-muted text-muted-foreground hover:text-foreground"
-            }`}
+              }`}
           >
             <Share2 className="w-4 h-4" />
             <span className="text-sm font-medium">Share</span>
@@ -232,7 +230,7 @@ export const Header = ({
                           <Info className="w-3.5 h-3.5 text-muted-foreground" />
                           <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block z-50">
                             <div className="bg-foreground text-background text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-                              Shows around 10 cards per column
+                              Will shrink to fit the page width
                               <div className="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground" />
                             </div>
                           </div>
