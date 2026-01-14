@@ -190,13 +190,25 @@ const Index = () => {
 
   // Save as PDF
   const handleSaveAsPDF = useCallback(() => {
-    if (!activePersona) {
+    if (!activeProject || !activePersona) {
       toast.error('No journey to export');
       return;
     }
-    window.print();
-    toast.success('Print dialog opened');
-  }, [activePersona]);
+
+    // Set document title so the PDF filename is descriptive
+    const originalTitle = document.title;
+    document.title = `${activeProject.name} - ${activePersona.name} - User Journey`;
+
+    // Small delay to ensure any open menus (like Share) close before printing
+    setTimeout(() => {
+      window.print();
+      // Restore title after a delay (long enough for the print dialog to capture it)
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 1000);
+      toast.success('Print dialog opened');
+    }, 100);
+  }, [activeProject, activePersona]);
 
   // Empty state for no project
   if (!activeProject) {
