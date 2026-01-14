@@ -46,6 +46,7 @@ export const TagBadge = ({ tag, size = 'sm' }: TagBadgeProps) => {
 
   return (
     <span
+      data-tag="true"
       className={cn(
         'inline-flex items-center font-medium rounded-full',
         config.className,

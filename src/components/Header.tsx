@@ -21,7 +21,6 @@ interface HeaderProps {
   onDeletePersona: (personaId: string) => void;
   onUpdatePersona: (persona: Persona) => void;
   onImportColumns?: (columns: JourneyColumn[]) => void;
-  onSaveAsPDF?: () => void;
 }
 
 export const Header = ({
@@ -34,7 +33,6 @@ export const Header = ({
   onDeletePersona,
   onUpdatePersona,
   onImportColumns,
-  onSaveAsPDF,
 }: HeaderProps) => {
   const [isImportOpen, setIsImportOpen] = useState(false);
 
@@ -135,7 +133,7 @@ export const Header = ({
         )}
 
         {/* Share Dropdown */}
-        <ShareDropdown onSaveAsPDF={onSaveAsPDF} />
+        <ShareDropdown />
       </div>
 
       {/* Import Dialog */}

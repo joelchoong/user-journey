@@ -70,6 +70,7 @@ export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProp
         <motion.div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          data-card="true"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}

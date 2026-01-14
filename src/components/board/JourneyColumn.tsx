@@ -35,6 +35,7 @@ export const JourneyColumn = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
+          data-column="true"
           className={`flex-shrink-0 w-72 h-full bg-column rounded-xl column-shadow flex flex-col transition-transform ${snapshot.isDragging ? 'rotate-1 scale-105' : ''
             }`}
           style={{

@@ -68,7 +68,7 @@ export const ColumnHeader = ({
     };
 
     return (
-        <div className="p-3 flex items-center gap-2">
+        <div className="p-3 flex items-center gap-2" data-column-header="true">
             <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
                 <GripVertical className="w-4 h-4 text-muted-foreground" />
             </div>

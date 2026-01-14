@@ -27,7 +27,6 @@ const Index = () => {
     handleUpdateWorkflow,
     handleImportColumns,
     handleUpdateUserProfile,
-    handleSaveAsPDF,
   } = useJourney();
 
   return (
@@ -54,7 +53,6 @@ const Index = () => {
           onDeletePersona={handleDeletePersona}
           onUpdatePersona={handleUpdatePersona}
           onImportColumns={handleImportColumns}
-          onSaveAsPDF={handleSaveAsPDF}
         />
 
         <main className="flex-1 bg-muted/30 relative flex flex-col overflow-hidden">

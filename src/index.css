@@ -210,3 +210,201 @@
     background-color: hsl(var(--muted-foreground));
   }
 }
+
+/* Print Styles for PDF Export */
+@media print {
+
+  /* Page setup for multi-page printing */
+  @page {
+    size: A4 landscape;
+    margin: 1.5cm 1cm;
+  }
+
+  /* Reset body and root for print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide UI elements that shouldn't appear in PDF */
+  .print\:hidden,
+  aside,
+  header button,
+  [role="button"],
+  button:not(.print-keep),
+  .scrollbar-thin {
+    display: none !important;
+  }
+
+  /* Make main content flow naturally */
+  main {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Convert horizontal grid to vertical flow for print */
+  .grid,
+  [class*="grid-cols"],
+  [class*="grid-template-columns"] {
+    display: block !important;
+    grid-template-columns: none !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Columns flow vertically and wrap to new pages */
+  [data-column] {
+    display: inline-block !important;
+    width: 9rem !important;
+    min-width: 9rem !important;
+    max-width: 9rem !important;
+    height: auto !important;
+    max-height: none !important;
+    vertical-align: top !important;
+    margin-right: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Column headers - more compact */
+  [data-column-header] {
+    font-size: 0.7rem !important;
+    padding: 0.25rem 0.375rem !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Cards - more compact */
+  [data-card] {
+    font-size: 0.65rem !important;
+    padding: 0.375rem !important;
+    margin-bottom: 0.25rem !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Card titles */
+  [data-card] h3,
+  [data-card] .font-medium {
+    font-size: 0.65rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.125rem !important;
+  }
+
+  /* Card descriptions */
+  [data-card] p,
+  [data-card] .text-sm {
+    font-size: 0.6rem !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Tags - smaller */
+  [data-tag] {
+    font-size: 0.55rem !important;
+    padding: 0.0625rem 0.25rem !important;
+    gap: 0.0625rem !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Workflow headers - compact */
+  [data-workflow-header] {
+    font-size: 0.65rem !important;
+    padding: 0.25rem 0.375rem !important;
+    margin-bottom: 0.25rem !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Remove all overflow constraints */
+  .overflow-x-auto,
+  .overflow-y-auto,
+  .overflow-hidden,
+  .overflow-auto {
+    overflow: visible !important;
+  }
+
+  /* Remove height constraints */
+  .h-full,
+  .h-screen,
+  .min-h-screen,
+  .max-h-screen {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Remove flex constraints that prevent page flow */
+  .flex-1 {
+    flex: none !important;
+  }
+
+  /* Remove shadows and transitions for print */
+  * {
+    box-shadow: none !important;
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Ensure text is black for readability */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div {
+    color: #000 !important;
+  }
+
+  /* Prevent orphaned headers */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Keep related content together when possible */
+  .space-y-2>*,
+  .space-y-3>*,
+  .space-y-4>* {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Header styling for print */
+  header {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Ensure droppable areas don't interfere */
+  [class*="droppable"] {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+}

@@ -211,25 +211,6 @@ export const useJourney = () => {
         }));
     }, []);
 
-    // Save as PDF
-    const handleSaveAsPDF = useCallback(() => {
-        if (!activeProject || !activePersona) {
-            toast.error('No journey to export');
-            return;
-        }
-
-        const originalTitle = document.title;
-        document.title = `${activeProject.name} - ${activePersona.name} - User Journey`;
-
-        setTimeout(() => {
-            window.print();
-            setTimeout(() => {
-                document.title = originalTitle;
-            }, 1000);
-            toast.success('Print dialog opened');
-        }, 100);
-    }, [activeProject, activePersona]);
-
     return {
         appState,
         activeProject,
@@ -250,6 +231,5 @@ export const useJourney = () => {
         handleUpdateWorkflow,
         handleImportColumns,
         handleUpdateUserProfile,
-        handleSaveAsPDF,
     };
 };
