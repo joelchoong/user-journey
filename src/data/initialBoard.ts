@@ -189,4 +189,14 @@ export const initialAppState: AppState = {
   ],
 
   activeProjectId: 'project-1',
+  user: {
+    name: 'Joel Choong',
+    email: 'joel@example.com',
+    plan: 'premium',
+    billingInfo: {
+      cardHolder: 'Joel Choong',
+      cardNumber: '**** **** **** 4242',
+      expiry: '12/26',
+    },
+  },
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { AppState, Project, Persona, JourneyColumn, Workflow, CardTag } from '@/types/journey';
+import { AppState, Project, Persona, JourneyColumn, Workflow, CardTag, UserProfile } from '@/types/journey';
 import { initialAppState, createEmptyProject, createEmptyPersona } from '@/data/initialBoard';
 
 const STORAGE_KEY = 'upstack-story-app';
@@ -10,7 +10,14 @@ export const useJourney = () => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             try {
-                return JSON.parse(saved);
+                const parsedState = JSON.parse(saved);
+                // Merge with initialAppState to ensure all required fields exist
+                // This handles backward compatibility when new fields are added
+                return {
+                    ...initialAppState,
+                    ...parsedState,
+                    user: parsedState.user || initialAppState.user, // Ensure user field exists
+                };
             } catch {
                 return initialAppState;
             }
@@ -196,6 +203,14 @@ export const useJourney = () => {
         handleColumnsChange([...existingColumns, ...newColumns]);
     }, [activeProject, activePersona, handleColumnsChange]);
 
+    // User handlers
+    const handleUpdateUserProfile = useCallback((updates: Partial<UserProfile>) => {
+        setAppState(prev => ({
+            ...prev,
+            user: { ...prev.user, ...updates }
+        }));
+    }, []);
+
     // Save as PDF
     const handleSaveAsPDF = useCallback(() => {
         if (!activeProject || !activePersona) {
@@ -234,6 +249,7 @@ export const useJourney = () => {
         handleAddWorkflow,
         handleUpdateWorkflow,
         handleImportColumns,
+        handleUpdateUserProfile,
         handleSaveAsPDF,
     };
 };

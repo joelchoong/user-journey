@@ -37,7 +37,19 @@ export interface Project {
   activePersonaId: string | null;
 }
 
+export interface UserProfile {
+  name: string;
+  email: string;
+  plan: 'free' | 'premium';
+  billingInfo: {
+    cardHolder: string;
+    cardNumber: string; // Stored as last 4 digits for demo
+    expiry: string;
+  };
+}
+
 export interface AppState {
   projects: Project[];
   activeProjectId: string | null;
+  user: UserProfile;
 }

@@ -26,6 +26,7 @@ const Index = () => {
     handleAddWorkflow,
     handleUpdateWorkflow,
     handleImportColumns,
+    handleUpdateUserProfile,
     handleSaveAsPDF,
   } = useJourney();
 
@@ -34,10 +35,12 @@ const Index = () => {
       <Sidebar
         projects={appState.projects}
         activeProject={activeProject}
+        user={appState.user}
         onSelectProject={handleSelectProject}
         onCreateProject={handleCreateProject}
         onDeleteProject={handleDeleteProject}
         onRenameProject={handleRenameProject}
+        onUpdateUser={handleUpdateUserProfile}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
