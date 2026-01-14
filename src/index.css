@@ -57,6 +57,16 @@
     --tag-edge: 280 60% 55%;
     --tag-edge-bg: 280 60% 96%;
 
+    /* Release tag colors */
+    --tag-mvp: 142 71% 45%;
+    --tag-mvp-bg: 142 71% 95%;
+    --tag-v1: 217 91% 60%;
+    --tag-v1-bg: 217 91% 95%;
+    --tag-v2: 262 83% 58%;
+    --tag-v2-bg: 262 83% 95%;
+    --tag-oos: 0 0% 45%;
+    --tag-oos-bg: 0 0% 95%;
+
     /* Column backgrounds */
     --column-bg: 210 20% 96%;
     --column-header: 220 20% 15%;
@@ -115,6 +125,15 @@
     --tag-edge: 280 55% 60%;
     --tag-edge-bg: 280 30% 15%;
 
+    --tag-mvp: 142 60% 50%;
+    --tag-mvp-bg: 142 50% 12%;
+    --tag-v1: 217 80% 60%;
+    --tag-v1-bg: 217 50% 15%;
+    --tag-v2: 262 75% 60%;
+    --tag-v2-bg: 262 50% 15%;
+    --tag-oos: 0 0% 60%;
+    --tag-oos-bg: 0 0% 15%;
+
     --column-bg: 220 20% 10%;
     --column-header: 210 20% 90%;
 
@@ -143,7 +162,12 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Space Grotesk', system-ui, sans-serif;
   }
 }

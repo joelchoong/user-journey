@@ -1,4 +1,4 @@
-export type CardTag = 'user' | 'system' | 'admin' | 'edge';
+export type CardTag = 'user' | 'system' | 'admin' | 'edge' | 'mvp' | 'v1' | 'v2' | 'out-of-scope';
 
 export interface JourneyCard {
   id: string;

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { AppState, Project, Persona, JourneyColumn, Workflow } from '@/types/journey';
+import { AppState, Project, Persona, JourneyColumn, Workflow, CardTag } from '@/types/journey';
 import { initialAppState, createEmptyProject, createEmptyPersona } from '@/data/initialBoard';
 
 const STORAGE_KEY = 'upstack-story-app';
@@ -18,12 +18,25 @@ export const useJourney = () => {
         return initialAppState;
     });
 
+    const [filterTag, setFilterTag] = useState<CardTag | 'all'>('all');
+
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
     }, [appState]);
 
     const activeProject = appState.projects.find(p => p.id === appState.activeProjectId) || null;
     const activePersona = activeProject?.personas.find(p => p.id === activeProject.activePersonaId) || null;
+
+    // Filter columns based on selected tag
+    const filteredColumns = useMemo(() => {
+        if (!activePersona) return [];
+        if (filterTag === 'all') return activePersona.columns;
+
+        return activePersona.columns.map(col => ({
+            ...col,
+            cards: col.cards.filter(card => card.tags.includes(filterTag))
+        }));
+    }, [activePersona, filterTag]);
 
     // Project handlers
     const handleSelectProject = useCallback((projectId: string) => {
@@ -206,6 +219,9 @@ export const useJourney = () => {
         appState,
         activeProject,
         activePersona,
+        filteredColumns,
+        filterTag,
+        setFilterTag,
         handleSelectProject,
         handleCreateProject,
         handleDeleteProject,

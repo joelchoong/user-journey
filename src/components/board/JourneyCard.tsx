@@ -17,7 +17,8 @@ interface JourneyCardProps {
   onDelete: () => void;
 }
 
-const availableTags: CardTag[] = ['user', 'system', 'admin', 'edge'];
+const roleTags: CardTag[] = ['user', 'system', 'admin', 'edge'];
+const releaseTags: CardTag[] = ['mvp', 'v1', 'v2', 'out-of-scope'];
 
 export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -144,18 +145,41 @@ export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProp
                       <Plus className="w-3 h-3 text-muted-foreground" />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-40 p-1" align="start">
-                    {availableTags.map((tag) => (
-                      <button
-                        key={tag}
-                        onClick={() => toggleTag(tag)}
-                        className={`w-full text-left px-2 py-1.5 text-xs rounded hover:bg-muted transition-colors flex items-center justify-between ${card.tags.includes(tag) ? 'bg-muted' : ''
-                          }`}
-                      >
-                        <TagBadge tag={tag} />
-                        {card.tags.includes(tag) && <span className="text-primary text-[10px]">✓</span>}
-                      </button>
-                    ))}
+                  <PopoverContent className="w-48 p-2" align="start">
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 px-2">Role</p>
+                        <div className="space-y-0.5">
+                          {roleTags.map((tag) => (
+                            <button
+                              key={tag}
+                              onClick={() => toggleTag(tag)}
+                              className={`w-full text-left px-2 py-1.5 text-xs rounded hover:bg-muted transition-colors flex items-center justify-between ${card.tags.includes(tag) ? 'bg-muted/50' : ''
+                                }`}
+                            >
+                              <TagBadge tag={tag} />
+                              {card.tags.includes(tag) && <span className="text-primary text-[10px]">✓</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 px-2">Release</p>
+                        <div className="space-y-0.5">
+                          {releaseTags.map((tag) => (
+                            <button
+                              key={tag}
+                              onClick={() => toggleTag(tag)}
+                              className={`w-full text-left px-2 py-1.5 text-xs rounded hover:bg-muted transition-colors flex items-center justify-between ${card.tags.includes(tag) ? 'bg-muted/50' : ''
+                                }`}
+                            >
+                              <TagBadge tag={tag} />
+                              {card.tags.includes(tag) && <span className="text-primary text-[10px]">✓</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>

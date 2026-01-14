@@ -23,6 +23,22 @@ const tagConfig: Record<CardTag, { label: string; className: string }> = {
     label: 'Edge Case',
     className: 'bg-tag-edge-bg text-tag-edge',
   },
+  mvp: {
+    label: 'MVP',
+    className: 'bg-tag-mvp-bg text-tag-mvp border border-tag-mvp/20',
+  },
+  v1: {
+    label: 'V1',
+    className: 'bg-tag-v1-bg text-tag-v1 border border-tag-v1/20',
+  },
+  v2: {
+    label: 'V2',
+    className: 'bg-tag-v2-bg text-tag-v2 border border-tag-v2/20',
+  },
+  'out-of-scope': {
+    label: 'Out of Scope',
+    className: 'bg-tag-oos-bg text-tag-oos border border-tag-oos/20',
+  },
 };
 
 export const TagBadge = ({ tag, size = 'sm' }: TagBadgeProps) => {

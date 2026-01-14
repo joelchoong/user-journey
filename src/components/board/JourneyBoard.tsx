@@ -52,7 +52,7 @@ export const JourneyBoard = ({ columns, workflows, onColumnsChange, onUpdateWork
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-thin">
+      <div className="flex-1 h-full overflow-x-auto overflow-y-hidden scrollbar-thin">
         <Droppable droppableId="board" type="column" direction="horizontal">
           {(provided) => (
             <div
