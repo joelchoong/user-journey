@@ -130,6 +130,57 @@ const Index = () => {
     }));
   };
 
+  // Workflow handlers
+  const handleAddWorkflow = (title: string, color: string) => {
+    if (!activeProject || !activePersona) return;
+    const newWorkflow: Workflow = {
+      id: `wf-${Math.random().toString(36).substr(2, 9)}`,
+      title,
+      color,
+    };
+
+    setAppState(prev => ({
+      ...prev,
+      projects: prev.projects.map(p =>
+        p.id === activeProject.id
+          ? {
+            ...p,
+            personas: p.personas.map(per =>
+              per.id === activePersona.id
+                ? { ...per, workflows: [...(per.workflows || []), newWorkflow] }
+                : per
+            ),
+          }
+          : p
+      ),
+    }));
+    return newWorkflow.id;
+  };
+
+  const handleUpdateWorkflow = (workflowId: string, updates: Partial<Workflow>) => {
+    if (!activeProject || !activePersona) return;
+    setAppState(prev => ({
+      ...prev,
+      projects: prev.projects.map(p =>
+        p.id === activeProject.id
+          ? {
+            ...p,
+            personas: p.personas.map(per =>
+              per.id === activePersona.id
+                ? {
+                  ...per,
+                  workflows: per.workflows?.map(wf =>
+                    wf.id === workflowId ? { ...wf, ...updates } : wf
+                  )
+                }
+                : per
+            ),
+          }
+          : p
+      ),
+    }));
+  };
+
   // Import columns (append to existing)
   const handleImportColumns = (newColumns: JourneyColumn[]) => {
     if (!activeProject || !activePersona) return;
@@ -246,6 +297,8 @@ const Index = () => {
         columns={activePersona.columns}
         workflows={activePersona.workflows}
         onColumnsChange={handleColumnsChange}
+        onAddWorkflow={handleAddWorkflow}
+        onUpdateWorkflow={handleUpdateWorkflow}
       />
 
       {/* Printable Journey - Hidden, only shows when printing */}

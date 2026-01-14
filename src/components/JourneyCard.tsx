@@ -4,6 +4,11 @@ import { Draggable } from '@hello-pangea/dnd';
 import { useState, useRef, useEffect } from 'react';
 import { GripVertical, X, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface JourneyCardProps {
   card: JourneyCardType;
@@ -18,9 +23,7 @@ export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProp
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(card.title);
   const [editedDescription, setEditedDescription] = useState(card.description || '');
-  const [showTagMenu, setShowTagMenu] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const tagMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -29,15 +32,6 @@ export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProp
     }
   }, [isEditing]);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (tagMenuRef.current && !tagMenuRef.current.contains(e.target as Node)) {
-        setShowTagMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleSave = () => {
     if (editedTitle.trim()) {
@@ -78,9 +72,8 @@ export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProp
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className={`group bg-card rounded-lg border border-border p-3 mb-2 transition-all duration-200 ${
-            snapshot.isDragging ? 'card-shadow-hover rotate-2' : 'card-shadow hover:card-shadow-hover'
-          }`}
+          className={`group bg-card rounded-lg border border-border p-3 mb-2 transition-all duration-200 ${snapshot.isDragging ? 'card-shadow-hover rotate-2' : 'card-shadow hover:card-shadow-hover'
+            }`}
         >
           <div className="flex items-start gap-2">
             <div
@@ -143,30 +136,28 @@ export const JourneyCard = ({ card, index, onUpdate, onDelete }: JourneyCardProp
                 {card.tags.map((tag) => (
                   <TagBadge key={tag} tag={tag} />
                 ))}
-                <div className="relative" ref={tagMenuRef}>
-                  <button
-                    onClick={() => setShowTagMenu(!showTagMenu)}
-                    className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    <Plus className="w-3 h-3 text-muted-foreground" />
-                  </button>
-                  {showTagMenu && (
-                    <div className="absolute left-0 top-full mt-1 z-10 bg-popover border border-border rounded-lg shadow-lg p-1 min-w-[100px]">
-                      {availableTags.map((tag) => (
-                        <button
-                          key={tag}
-                          onClick={() => toggleTag(tag)}
-                          className={`w-full text-left px-2 py-1.5 text-xs rounded hover:bg-muted transition-colors flex items-center justify-between ${
-                            card.tags.includes(tag) ? 'bg-muted' : ''
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Plus className="w-3 h-3 text-muted-foreground" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40 p-1" align="start">
+                    {availableTags.map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => toggleTag(tag)}
+                        className={`w-full text-left px-2 py-1.5 text-xs rounded hover:bg-muted transition-colors flex items-center justify-between ${card.tags.includes(tag) ? 'bg-muted' : ''
                           }`}
-                        >
-                          <TagBadge tag={tag} />
-                          {card.tags.includes(tag) && <span className="text-primary">✓</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      >
+                        <TagBadge tag={tag} />
+                        {card.tags.includes(tag) && <span className="text-primary text-[10px]">✓</span>}
+                      </button>
+                    ))}
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 

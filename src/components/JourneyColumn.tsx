@@ -14,6 +14,7 @@ interface JourneyColumnProps {
   onAddCard: () => void;
   onUpdateCard: (cardId: string, card: JourneyCardType) => void;
   onDeleteCard: (cardId: string) => void;
+  onAddWorkflow?: (title: string, color: string) => string;
 }
 
 export const JourneyColumn = ({
@@ -25,19 +26,26 @@ export const JourneyColumn = ({
   onAddCard,
   onUpdateCard,
   onDeleteCard,
+  onAddWorkflow,
 }: JourneyColumnProps) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(column.title);
   const [showMenu, setShowMenu] = useState(false);
+  const [isAddingWorkflow, setIsAddingWorkflow] = useState(false);
+  const [newWorkflowTitle, setNewWorkflowTitle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const workflowInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEditingTitle && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [isEditingTitle]);
+    if (isAddingWorkflow && workflowInputRef.current) {
+      workflowInputRef.current.focus();
+    }
+  }, [isEditingTitle, isAddingWorkflow]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -72,7 +80,7 @@ export const JourneyColumn = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={`flex-shrink-0 w-72 bg-column rounded-xl column-shadow flex flex-col transition-transform ${snapshot.isDragging ? 'rotate-1 scale-105' : ''
+          className={`flex-shrink-0 w-72 h-full bg-column rounded-xl column-shadow flex flex-col transition-transform ${snapshot.isDragging ? 'rotate-1 scale-105' : ''
             }`}
           style={{
             ...provided.draggableProps.style,
@@ -153,6 +161,43 @@ export const JourneyColumn = ({
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    {/* Create New Workflow */}
+                    <div className="px-2 py-1.5 border-b border-border/50 mb-1">
+                      {isAddingWorkflow ? (
+                        <div className="flex gap-1">
+                          <input
+                            ref={workflowInputRef}
+                            type="text"
+                            placeholder="Workflow name..."
+                            className="flex-1 text-xs bg-muted/50 border-input rounded h-7 px-1 focus:outline-none focus:ring-1 focus:ring-primary"
+                            value={newWorkflowTitle}
+                            onChange={(e) => setNewWorkflowTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && newWorkflowTitle.trim() && onAddWorkflow) {
+                                const newId = onAddWorkflow(newWorkflowTitle.trim(), '#F3F4F6');
+                                onUpdateColumn({ ...column, workflowId: newId });
+                                setIsAddingWorkflow(false);
+                                setNewWorkflowTitle('');
+                                setShowMenu(false);
+                              }
+                              if (e.key === 'Escape') {
+                                setIsAddingWorkflow(false);
+                                setNewWorkflowTitle('');
+                              }
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setIsAddingWorkflow(true)}
+                          className="w-full text-left text-xs font-medium text-primary hover:underline flex items-center gap-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Create New Workflow
+                        </button>
+                      )}
                     </div>
 
                     <button

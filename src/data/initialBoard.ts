@@ -1,4 +1,4 @@
-import { AppState, Persona, JourneyColumn } from '@/types/journey';
+import { AppState, Persona, JourneyColumn, Project, Workflow } from '@/types/journey';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -31,6 +31,7 @@ export const createEmptyPersona = (name: string = 'New Persona'): Persona => ({
       cards: [],
     },
   ],
+  workflows: [],
 });
 
 export const createEmptyProject = (name: string = 'New Project'): { project: ReturnType<typeof createProjectWithPersona>['project']; personaId: string } => {
@@ -46,18 +47,20 @@ export const createEmptyProject = (name: string = 'New Project'): { project: Ret
   };
 };
 
-const createProjectWithPersona = (name: string, persona: Persona) => ({
+const createProjectWithPersona = (name: string, persona: Persona): { project: Project; personaId: string } => ({
   project: {
     id: generateId(),
     name,
-    personas: [persona],
+    personas: [{
+      ...persona,
+      workflows: [
+        { id: generateId(), title: 'Discovery', color: '#E0F2FE' },
+        { id: generateId(), title: 'Consideration', color: '#FFF7ED' },
+        { id: generateId(), title: 'Conversion', color: '#F0FDF4' },
+        { id: generateId(), title: 'Retention', color: '#F3F4F6' },
+      ],
+    }],
     activePersonaId: persona.id,
-    workflows: [
-      { id: generateId(), title: 'Discovery', color: '#E0F2FE' },
-      { id: generateId(), title: 'Consideration', color: '#FFF7ED' },
-      { id: generateId(), title: 'Conversion', color: '#F0FDF4' },
-      { id: generateId(), title: 'Retention', color: '#F3F4F6' },
-    ],
   },
   personaId: persona.id,
 });
@@ -172,6 +175,7 @@ const samplePersona: Persona = {
       ],
     },
   ],
+  workflows: SampleWorkflows,
 };
 
 export const initialAppState: AppState = {
@@ -181,7 +185,6 @@ export const initialAppState: AppState = {
       name: 'Device Protection App',
       personas: [samplePersona],
       activePersonaId: 'persona-1',
-      workflows: SampleWorkflows,
     },
   ],
 
