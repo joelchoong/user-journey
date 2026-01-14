@@ -1,11 +1,11 @@
-import { Share2, Link, FileDown, Check, Upload, LogOut, Settings, Info } from "lucide-react";
+import { Upload } from "lucide-react";
 import { Project, Persona, JourneyColumn } from "@/types/journey";
 import { ProjectSelector } from "./ProjectSelector";
 import { PersonaSelector } from "./PersonaSelector";
 import { ImportSpreadsheet } from "./ImportSpreadsheet";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
+import { useState } from "react";
+import { ProfileDropdown } from "./header/ProfileDropdown";
+import { ShareDropdown } from "./header/ShareDropdown";
 
 interface HeaderProps {
   projects: Project[];
@@ -39,114 +39,12 @@ export const Header = ({
   onSaveAsPDF,
 }: HeaderProps) => {
   const [isImportOpen, setIsImportOpen] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const shareDropdownRef = useRef<HTMLDivElement>(null);
-  const profileDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Mock user data - replace with actual auth later
-  const userName = "John Doe";
-  const userInitials = userName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (shareDropdownRef.current && !shareDropdownRef.current.contains(e.target as Node)) {
-        setIsShareOpen(false);
-      }
-      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target as Node)) {
-        setIsProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCopyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    toast.success("Link copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSaveAsPDF = () => {
-    setIsShareOpen(false);
-    if (onSaveAsPDF) {
-      onSaveAsPDF();
-    }
-  };
-
-  const handleProfileSettings = () => {
-    setIsProfileOpen(false);
-    toast.info("Profile settings coming soon!");
-  };
-
-  const handleSignOut = () => {
-    setIsProfileOpen(false);
-    toast.info("Sign out coming soon!");
-  };
 
   return (
     <header className="bg-card border-b border-border px-6 py-3 flex items-center justify-between relative z-50 print:hidden">
       <div className="flex items-center gap-4">
         {/* Profile Avatar */}
-        <div className="relative" ref={profileDropdownRef}>
-          <button
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className={`w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors ${isProfileOpen ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""
-              }`}
-          >
-            {userInitials}
-          </button>
-
-          <AnimatePresence>
-            {isProfileOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute top-full left-0 mt-2 z-50 w-56 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
-                >
-                  <div className="p-3 border-b border-border">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
-                        {userInitials}
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground text-sm">{userName}</p>
-                        <p className="text-xs text-muted-foreground">john@example.com</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-1">
-                    <button
-                      onClick={handleProfileSettings}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                      <Settings className="w-4 h-4 text-muted-foreground" />
-                      Profile Settings
-                    </button>
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
+        <ProfileDropdown />
 
         {/* Project Selector */}
         <ProjectSelector
@@ -184,65 +82,7 @@ export const Header = ({
         )}
 
         {/* Share Dropdown */}
-        <div className="relative" ref={shareDropdownRef}>
-          <button
-            onClick={() => setIsShareOpen(!isShareOpen)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${isShareOpen
-                ? "bg-primary/10 border-primary/30 text-primary"
-                : "border-border hover:bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-          >
-            <Share2 className="w-4 h-4" />
-            <span className="text-sm font-medium">Share</span>
-          </button>
-
-          <AnimatePresence>
-            {isShareOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsShareOpen(false)} />
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute top-full right-0 mt-2 z-50 w-56 bg-card border border-border rounded-xl shadow-lg overflow-hidden"
-                >
-                  <div className="p-1">
-                    <button
-                      onClick={handleCopyLink}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                      {copied ? (
-                        <Check className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <Link className="w-4 h-4 text-muted-foreground" />
-                      )}
-                      {copied ? "Copied!" : "Copy Link"}
-                    </button>
-                    <div className="relative group">
-                      <button
-                        onClick={handleSaveAsPDF}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                      >
-                        <FileDown className="w-4 h-4 text-muted-foreground" />
-                        <span className="flex-1 text-left">Save as PDF</span>
-                        <div className="relative">
-                          <Info className="w-3.5 h-3.5 text-muted-foreground" />
-                          <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block z-50">
-                            <div className="bg-foreground text-background text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-                              Will shrink to fit the page width
-                              <div className="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground" />
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
+        <ShareDropdown onSaveAsPDF={onSaveAsPDF} />
       </div>
 
       {/* Import Dialog */}

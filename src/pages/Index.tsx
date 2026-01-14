@@ -1,214 +1,29 @@
-import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { JourneyBoard } from '@/components/JourneyBoard';
 import { PrintableJourney } from '@/components/PrintableJourney';
-import { AppState, Project, Persona, JourneyColumn, Workflow } from '@/types/journey';
-import { initialAppState, createEmptyProject, createEmptyPersona } from '@/data/initialBoard';
 import { Inbox, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
-
-const STORAGE_KEY = 'upstack-story-app';
+import { useJourney } from '@/hooks/useJourney';
 
 const Index = () => {
-  const [appState, setAppState] = useState<AppState>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialAppState;
-      }
-    }
-    return initialAppState;
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-  }, [appState]);
-
-  const activeProject = appState.projects.find(p => p.id === appState.activeProjectId) || null;
-  const activePersona = activeProject?.personas.find(p => p.id === activeProject.activePersonaId) || null;
-
-  // Project handlers
-  const handleSelectProject = (projectId: string) => {
-    setAppState(prev => ({ ...prev, activeProjectId: projectId }));
-  };
-
-  const handleCreateProject = () => {
-    const { project } = createEmptyProject(`Project ${appState.projects.length + 1}`);
-    setAppState(prev => ({
-      ...prev,
-      projects: [...prev.projects, project],
-      activeProjectId: project.id,
-    }));
-  };
-
-  const handleDeleteProject = (projectId: string) => {
-    setAppState(prev => {
-      const newProjects = prev.projects.filter(p => p.id !== projectId);
-      const newActiveId = prev.activeProjectId === projectId
-        ? newProjects[0]?.id || null
-        : prev.activeProjectId;
-      return { ...prev, projects: newProjects, activeProjectId: newActiveId };
-    });
-  };
-
-  const handleRenameProject = (projectId: string, name: string) => {
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p => p.id === projectId ? { ...p, name } : p),
-    }));
-  };
-
-  // Persona handlers
-  const handleSelectPersona = (personaId: string) => {
-    if (!activeProject) return;
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p =>
-        p.id === activeProject.id ? { ...p, activePersonaId: personaId } : p
-      ),
-    }));
-  };
-
-  const handleCreatePersona = () => {
-    if (!activeProject) return;
-    const newPersona = createEmptyPersona(`Persona ${activeProject.personas.length + 1}`);
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p =>
-        p.id === activeProject.id
-          ? { ...p, personas: [...p.personas, newPersona], activePersonaId: newPersona.id }
-          : p
-      ),
-    }));
-  };
-
-  const handleDeletePersona = (personaId: string) => {
-    if (!activeProject) return;
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p => {
-        if (p.id !== activeProject.id) return p;
-        const newPersonas = p.personas.filter(per => per.id !== personaId);
-        const newActivePersonaId = p.activePersonaId === personaId
-          ? newPersonas[0]?.id || null
-          : p.activePersonaId;
-        return { ...p, personas: newPersonas, activePersonaId: newActivePersonaId };
-      }),
-    }));
-  };
-
-  const handleUpdatePersona = (updatedPersona: Persona) => {
-    if (!activeProject) return;
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p =>
-        p.id === activeProject.id
-          ? { ...p, personas: p.personas.map(per => per.id === updatedPersona.id ? updatedPersona : per) }
-          : p
-      ),
-    }));
-  };
-
-  // Column handlers
-  const handleColumnsChange = (columns: JourneyColumn[]) => {
-    if (!activeProject || !activePersona) return;
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p =>
-        p.id === activeProject.id
-          ? {
-            ...p,
-            personas: p.personas.map(per =>
-              per.id === activePersona.id ? { ...per, columns } : per
-            ),
-          }
-          : p
-      ),
-    }));
-  };
-
-  // Workflow handlers
-  const handleAddWorkflow = (title: string, color: string) => {
-    if (!activeProject || !activePersona) return;
-    const newWorkflow: Workflow = {
-      id: `wf-${Math.random().toString(36).substr(2, 9)}`,
-      title,
-      color,
-    };
-
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p =>
-        p.id === activeProject.id
-          ? {
-            ...p,
-            personas: p.personas.map(per =>
-              per.id === activePersona.id
-                ? { ...per, workflows: [...(per.workflows || []), newWorkflow] }
-                : per
-            ),
-          }
-          : p
-      ),
-    }));
-    return newWorkflow.id;
-  };
-
-  const handleUpdateWorkflow = (workflowId: string, updates: Partial<Workflow>) => {
-    if (!activeProject || !activePersona) return;
-    setAppState(prev => ({
-      ...prev,
-      projects: prev.projects.map(p =>
-        p.id === activeProject.id
-          ? {
-            ...p,
-            personas: p.personas.map(per =>
-              per.id === activePersona.id
-                ? {
-                  ...per,
-                  workflows: per.workflows?.map(wf =>
-                    wf.id === workflowId ? { ...wf, ...updates } : wf
-                  )
-                }
-                : per
-            ),
-          }
-          : p
-      ),
-    }));
-  };
-
-  // Import columns (append to existing)
-  const handleImportColumns = (newColumns: JourneyColumn[]) => {
-    if (!activeProject || !activePersona) return;
-    const existingColumns = activePersona.columns;
-    handleColumnsChange([...existingColumns, ...newColumns]);
-  };
-
-  // Save as PDF
-  const handleSaveAsPDF = useCallback(() => {
-    if (!activeProject || !activePersona) {
-      toast.error('No journey to export');
-      return;
-    }
-
-    // Set document title so the PDF filename is descriptive
-    const originalTitle = document.title;
-    document.title = `${activeProject.name} - ${activePersona.name} - User Journey`;
-
-    // Small delay to ensure any open menus (like Share) close before printing
-    setTimeout(() => {
-      window.print();
-      // Restore title after a delay (long enough for the print dialog to capture it)
-      setTimeout(() => {
-        document.title = originalTitle;
-      }, 1000);
-      toast.success('Print dialog opened');
-    }, 100);
-  }, [activeProject, activePersona]);
+  const {
+    appState,
+    activeProject,
+    activePersona,
+    handleSelectProject,
+    handleCreateProject,
+    handleDeleteProject,
+    handleRenameProject,
+    handleSelectPersona,
+    handleCreatePersona,
+    handleDeletePersona,
+    handleUpdatePersona,
+    handleColumnsChange,
+    handleAddWorkflow,
+    handleUpdateWorkflow,
+    handleImportColumns,
+    handleSaveAsPDF,
+  } = useJourney();
 
   // Empty state for no project
   if (!activeProject) {
